@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Roulement{% endblock %}
+
+{% block body %}
+    <h1>Create new Roulement</h1>
+
+    {{ include('roulement/_form.html.twig') }}
+
+    <a href="{{ path('app_roulement_index') }}">back to list</a>
+{% endblock %}

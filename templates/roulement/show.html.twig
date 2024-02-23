@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Roulement{% endblock %}
+
+{% block body %}
+    <h1>Roulement</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ roulement.id }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ roulement.date ? roulement.date|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>PriseDeService</th>
+                <td>{{ roulement.priseDeService ? roulement.priseDeService|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>FinDeService</th>
+                <td>{{ roulement.finDeService ? roulement.finDeService|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Service</th>
+                <td>{{ roulement.service.label }}</td>
+            </tr>
+            <tr>
+                <th>Agent</th>
+                <td>{{ roulement.agent.username }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_roulement_index') }}">back to list</a>
+
+    <a href="{{ path('app_roulement_edit', {'id': roulement.id}) }}">edit</a>
+
+    {{ include('roulement/_delete_form.html.twig') }}
+{% endblock %}
