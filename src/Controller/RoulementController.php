@@ -15,10 +15,14 @@ use Symfony\Component\Routing\Attribute\Route;
 class RoulementController extends AbstractController
 {
     #[Route('/', name: 'app_roulement_index', methods: ['GET'])]
-    public function index(RoulementRepository $roulementRepository): Response
+    public function index(RoulementRepository $roulementRepository, Request $request): Response
     {
+        $searchTerm = $request->query->get('agent') ? $request->query->get('agent') : '';
+
+        $roulement = $roulementRepository->findByAgent($searchTerm);
+
         return $this->render('roulement/index.html.twig', [
-            'roulements' => $roulementRepository->findAll(),
+            'roulements' => $roulement,
         ]);
     }
 

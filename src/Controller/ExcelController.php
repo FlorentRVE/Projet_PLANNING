@@ -6,6 +6,7 @@ use App\Entity\Roulement;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,7 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExcelController extends AbstractController
 {
     #[Route('/import', name: 'app_import_excel')]
-    public function creeruser(Request $request, UserRepository $userRepository, ServiceRepository $serviceRepository): Response
+    public function creeruser(Request $request, UserRepository $userRepository, ServiceRepository $serviceRepository, EntityManagerInterface $entityManager): Response
     {
         $spreadsheet = IOFactory::load('assets/excel/planning_test.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
@@ -125,32 +126,30 @@ class ExcelController extends AbstractController
             }
         }
 
-        // dd($dates, $user_Array);    
-
         // ============ CREATION DES ROULEMENTS =================
+        // dd($user_Array);    
 
-        $roulement_list = [];
+        // $roulement_list = [];
         foreach($user_Array as $user) {
 
             for($num = 0; $num < count($dates); $num++) {
 
                 $roulement = new Roulement();
-                $roulement->setDate($dates[$num]);
                 $roulement->setAgent($userRepository->findOneBy(['username' => $user['name']]));
+                $roulement->setDate($dates[$num]);
                 $roulement->setService($serviceRepository->findOneBy(['label' => $user['services'][$num]]));
                 $roulement->setPriseDeService($user['horaires'][$num][0]);
                 $roulement->setFinDeService($user['horaires'][$num][1]);
 
-                $roulement_list[] = $roulement;                
+                $entityManager->persist($roulement);
+                $entityManager->flush();
+                // $roulement_list[] = $roulement;                
             }
         }
 
-        dd($roulement_list);
+        // dd($roulement_list);
 
 
-        // $entityManager->persist($user);
-        // $entityManager->flush();
-        // }
 
         return new Response('Données importé avec succès');
     }

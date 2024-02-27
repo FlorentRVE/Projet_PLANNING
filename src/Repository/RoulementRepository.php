@@ -21,6 +21,20 @@ class RoulementRepository extends ServiceEntityRepository
         parent::__construct($registry, Roulement::class);
     }
 
+
+    public function findByAgent($value)
+    {
+        return $this->createQueryBuilder('r')
+            ->select('a, r')
+            ->innerJoin('r.agent', 'a')
+            ->andWhere(':val = \'\' OR :val LIKE a.username')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+
     //    /**
     //     * @return Roulement[] Returns an array of Roulement objects
     //     */
