@@ -56,97 +56,97 @@ class ExcelController extends AbstractController
 
         //=================
         $formattedData = [];
-        $horaireId = 0;
         $agentId = 0;
 
         foreach ($data as $row) {
             if ($row != null) {
                 switch ($row[0]) {
-                    case 'Horaires':
-                        $formattedData[] = [
-                            'horaires_' . $horaireId => $row,
-                        ];
-                        $horaireId++;
-                        break;
                     case in_array($row[0], $agent_name):
-                        $formattedData[] = [
-                            'service_' . $agentId => $row,
-                        ];
+                        $formattedData['service_' . $agentId] = $row;
+                        break;
+                    case 'Horaires':
+                        $formattedData['horaires_' . $agentId] = $row;
                         $agentId++;
                         break;
                     case (dateRegex($row[0])):
-                        $formattedData[] = [
-                            'date' => $row,
-                        ];
+                        $formattedData['date'] = $row;
                         break;
-
-
                 }
             }
-
         }
 
+
         // ============ DATE =============
-        $dates = $formattedData[0]['date'];
+        $dates = $formattedData['date'];
         $dates = array_map(function ($dateString) {
             return DateTime::createFromFormat('d/m/Y', $dateString);
         }, $dates);
 
         $formattedData = array_splice($formattedData, 1);
 
+
         // ==================== USER ARRAY ============================
 
         $user_Array = [];
         for ($id = 0; $id < count($formattedData); $id++) {
-
             $user_Array["user_" . $id] = array_slice($formattedData, 0, 2);
             $formattedData = array_splice($formattedData, 2);
         }
 
+
         for($i = 0; $i < count($user_Array); $i++) {
 
-            $user_Array["user_" . $i]['name'] = $user_Array["user_" . $i][0]['service_' . $i][0];
-            $user_Array["user_" . $i][0]['service_' . $i] = array_splice($user_Array["user_" . $i][0]['service_' . $i], 1);
-            $user_Array["user_" . $i][1]['horaires_' . $i] = array_splice($user_Array["user_" . $i][1]['horaires_' . $i], 1);
+            $user_Array["user_" . $i]['name'] = $user_Array["user_" . $i]['service_' . $i][0];
+            $user_Array["user_" . $i]['service_' . $i] = array_splice($user_Array["user_" . $i]['service_' . $i], 1);
+            $user_Array["user_" . $i]['horaires_' . $i] = array_splice($user_Array["user_" . $i]['horaires_' . $i], 1);
 
-            $user_Array["user_" . $i]['services'] = $user_Array["user_" . $i][0]['service_' . $i];
-            $user_Array["user_" . $i]['horaires'] = $user_Array["user_" . $i][1]['horaires_' . $i];
+            $user_Array["user_" . $i]['services'] = $user_Array["user_" . $i]['service_' . $i];
+            $user_Array["user_" . $i]['horaires'] = $user_Array["user_" . $i]['horaires_' . $i];
 
             $user_Array["user_" . $i] = array_splice($user_Array["user_" . $i], 2);
         }
 
-        foreach($user_Array as $user) {
 
-            $user['horaires'] = array_map(function ($timeRange) {
-                $times = explode(" - ", $timeRange);
-                if (count($times) === 2) {
-                    $startTime = DateTime::createFromFormat('H:i', $times[0]);
-                    $endTime = DateTime::createFromFormat('H:i', $times[1]);
-                    return [$startTime, $endTime];
+        foreach($user_Array as $i => $user) {
+
+            foreach($user['horaires'] as $keyHoraire => $horaire) {
+                if(!horaireRegex($horaire)) {
+                    $startTime = DateTime::createFromFormat('H:i', '00:00');
+                    $endTime = DateTime::createFromFormat('H:i', '00:00');
+                    $horaire = [$startTime, $endTime];
+                } else {
+                    $heureService = explode(' - ', $horaire);
+                    $startTime = DateTime::createFromFormat('H:i', $heureService[0]);
+                    $endTime = DateTime::createFromFormat('H:i', $heureService[1]);
+                    $horaire = [$startTime, $endTime];
+
                 }
-                return DateTime::createFromFormat('H:i', '00:00'); // ou une autre valeur par défaut pour les plages horaires incorrectes
-            }, $user['horaires']);
-
-        }
-
-        dd($user_Array);
-
-        // ============ PARCOURIR TOUTES LES LIGNES DU TABLEAU ET CREE USER =================
-
-        foreach($dates as $date) {
-
-            for($num = 0; $num < count($user_Array); $num++) {
-
-                $roulement = new Roulement();
-                $roulement->setDate($date);
-                $roulement->setAgent($userRepository->findOneBy(['username' => $user_Array['user_' . $num][0]['service_' . $num][0]]));
-                $roulement->setService($serviceRepository->findOneBy(['label' => $user_Array['user_' . $num][0]['service_' . $num][$num]]));
-                $roulement->setPriseDeService(DateTime::createFromFormat('H:i', '08:00'));
-                $roulement->setFinDeService(DateTime::createFromFormat('H:i', '17:00'));
+                $user_Array[$i]['horaires'][$keyHoraire] = $horaire;
             }
         }
 
-        // dd($roulement);
+        // dd($dates, $user_Array);    
+
+        // ============ CREATION DES ROULEMENTS =================
+
+        $roulement_list = [];
+        foreach($user_Array as $user) {
+
+            for($num = 0; $num < count($dates); $num++) {
+
+                $roulement = new Roulement();
+                $roulement->setDate($dates[$num]);
+                $roulement->setAgent($userRepository->findOneBy(['username' => $user['name']]));
+                $roulement->setService($serviceRepository->findOneBy(['label' => $user['services'][$num]]));
+                $roulement->setPriseDeService($user['horaires'][$num][0]);
+                $roulement->setFinDeService($user['horaires'][$num][1]);
+
+                $roulement_list[] = $roulement;                
+            }
+        }
+
+        dd($roulement_list);
+
 
         // $entityManager->persist($user);
         // $entityManager->flush();
