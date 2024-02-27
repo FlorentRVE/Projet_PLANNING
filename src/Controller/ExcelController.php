@@ -21,7 +21,7 @@ class ExcelController extends AbstractController
         $spreadsheet = IOFactory::load('assets/excel/planning_test.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
 
-        // =========== Récupérer les données du tableau Excel =============
+        // =================== DONNEE BRUT EXCEL ====================
         $data = [];
         foreach ($sheet->getRowIterator() as $row) {
             $rowData = [];
@@ -33,14 +33,7 @@ class ExcelController extends AbstractController
             $data[] = $rowData;
         }
 
-        // ==== recupere nom agent dans entité =========
-        $agent_list = $userRepository->findAll();
-        $agent_name = [];
-        foreach ($agent_list as $agent) {
-            $agent_name[] = $agent->getUsername();
-        }
-
-        // ==== REGEX =====
+        // ================== FONCTION VERIFICATION ==================
         function dateRegex($date)
         {
             if (preg_match('/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/', $date)) {
@@ -55,14 +48,22 @@ class ExcelController extends AbstractController
             }
         }
 
-        //=================
+        function checkAgent($userRepository, $agentId)
+        {
+            $agentCheck = $userRepository->findOneBy(['username' => $agentId]);
+            if($agentCheck) {
+                return true;
+            }
+        }
+
+        //====================== RECUPERATION DONNEE UTILE ==========================
         $formattedData = [];
         $agentId = 0;
 
         foreach ($data as $row) {
             if ($row != null) {
                 switch ($row[0]) {
-                    case in_array($row[0], $agent_name):
+                    case checkAgent($userRepository, $row[0]):
                         $formattedData['service_' . $agentId] = $row;
                         break;
                     case 'Horaires':
@@ -76,8 +77,8 @@ class ExcelController extends AbstractController
             }
         }
 
-
-        // ============ DATE =============
+        // ================== FORMATAGE DATE ===========================
+        
         $dates = $formattedData['date'];
         $dates = array_map(function ($dateString) {
             return DateTime::createFromFormat('d/m/Y', $dateString);
@@ -85,8 +86,7 @@ class ExcelController extends AbstractController
 
         $formattedData = array_splice($formattedData, 1);
 
-
-        // ==================== USER ARRAY ============================
+        // ==================== FORMATAGE USER  ============================
 
         $user_Array = [];
         for ($id = 0; $id < count($formattedData); $id++) {
@@ -126,10 +126,10 @@ class ExcelController extends AbstractController
             }
         }
 
-        // ============ CREATION DES ROULEMENTS =================
-        // dd($user_Array);    
+        // dd($user_Array);
+        // ==================== CREATION ROULEMENTS ===================
 
-        // $roulement_list = [];
+        $roulement_list = [];
         foreach($user_Array as $user) {
 
             for($num = 0; $num < count($dates); $num++) {
@@ -141,15 +141,13 @@ class ExcelController extends AbstractController
                 $roulement->setPriseDeService($user['horaires'][$num][0]);
                 $roulement->setFinDeService($user['horaires'][$num][1]);
 
-                $entityManager->persist($roulement);
-                $entityManager->flush();
-                // $roulement_list[] = $roulement;                
+                // $entityManager->persist($roulement);
+                // $entityManager->flush();
+                $roulement_list[] = $roulement;
             }
         }
 
-        // dd($roulement_list);
-
-
+        dd($roulement_list);
 
         return new Response('Données importé avec succès');
     }
