@@ -17,9 +17,9 @@ class RoulementController extends AbstractController
     #[Route('/', name: 'app_roulement_index', methods: ['GET'])]
     public function index(RoulementRepository $roulementRepository, Request $request): Response
     {
-        $searchTerm = $request->query->get('agent') ? $request->query->get('agent') : '';
+        $searchTerm = $request->query->get('tri');
 
-        $roulement = $roulementRepository->findByAgent($searchTerm);
+        $roulement = $roulementRepository->findByTri($searchTerm);
 
         return $this->render('roulement/index.html.twig', [
             'roulements' => $roulement,

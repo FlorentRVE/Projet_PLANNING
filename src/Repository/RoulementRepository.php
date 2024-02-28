@@ -22,13 +22,12 @@ class RoulementRepository extends ServiceEntityRepository
     }
 
 
-    public function findByAgent($value)
+    public function findByTri($value)
     {
         return $this->createQueryBuilder('r')
             ->select('a, r')
             ->innerJoin('r.agent', 'a')
-            ->andWhere(':val = \'\' OR :val LIKE a.username')
-            ->setParameter('val', $value)
+            ->orderBy('a.username', $value)
             ->getQuery()
             ->getResult()
         ;

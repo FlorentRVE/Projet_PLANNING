@@ -20,7 +20,7 @@ class ExcelController extends AbstractController
     {
         // ======================= DONNEE BRUT EXCEL ====================
 
-        $spreadsheet = IOFactory::load('assets/excel/planning_test.xlsx');
+        $spreadsheet = IOFactory::load('assets/excel/ABC - Planning semaine.xls');
         $sheet = $spreadsheet->getActiveSheet();
 
         $data = [];
@@ -90,9 +90,10 @@ class ExcelController extends AbstractController
         // ============================ FORMATAGE USER ============================
 
         $userList = [];
-        for ($id = 0; $id < count($mainData); $id++) {
-            $userList["user_" . $id] = array_splice($mainData, 0, 2);
-            $mainData = array_slice($mainData, 0, 2);
+        $sliceID = 0;
+        for ($id = 0; $id < count($mainData)/2; $id++) {
+            $userList["user_" . $id] = array_slice($mainData, $sliceID, 2);
+            $sliceID += 2;
         }
 
         for($i = 0; $i < count($userList); $i++) {
@@ -116,11 +117,11 @@ class ExcelController extends AbstractController
                     $startTime = DateTime::createFromFormat('H:i', $heureService[0]);
                     $endTime = DateTime::createFromFormat('H:i', $heureService[1]);
                     $horaire = [$startTime, $endTime];
-
                 }
                 $userList[$keyUser]['horaires'][$keyHoraire] = $horaire;
             }
         }
+
         // =========================== CREATION ROULEMENTS ========================
 
         function createService($er, $sr, $serviceName)
@@ -132,14 +133,13 @@ class ExcelController extends AbstractController
             $er->flush();
 
             return $sr->findOneBy(['label' => $serviceName]);
-
         }
 
-        dd($userList);
+        // dd($userList);
         $roulementList = [];
         foreach($userList as $user) {
 
-            for($num = 0; $num < count($dates); $num++) {
+            for($num = 0; $num < count($user['services']); $num++) {
 
                 $roulement = new Roulement();
                 $roulement->setAgent($userRepository->findOneBy(['username' => $user['name']]));

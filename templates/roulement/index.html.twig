@@ -7,9 +7,8 @@
 <div class="flex flex-col justify-center items-center p-6">
 
     <div class="flex justify-center items-center p-2 gap-4">
-        <a href="{{ path('app_roulement_index', {'agent': "AgentUn"}) }}"><button class="btn bg-sky-400">Agent Un</button></a>
-        <a href="{{ path('app_roulement_index', {'agent': "AgentDeux"}) }}"><button class="btn bg-sky-400">Agent Deux</button></a>        
-        <a href="{{ path('app_roulement_index', {'agent': " "}) }}"><button class="btn bg-sky-400">Tout</button></a>        
+        <a href="{{ path('app_roulement_index', {'tri': "ASC"}) }}"><button class="btn bg-sky-400">ASC</button></a>
+        <a href="{{ path('app_roulement_index', {'tri': "DESC"}) }}"><button class="btn bg-sky-400">DESC</button></a>        
     </div>
 
     <table class="table bg-sky-300">
