@@ -17,7 +17,7 @@ class ExcelController extends AbstractController
     #[Route('/import', name: 'app_import_excel')]
     public function importExcel(UserRepository $userRepository, ServiceRepository $serviceRepository, EntityManagerInterface $entityManager): Response
     {
-        // =================== DONNEE BRUT EXCEL ====================
+        // ======================= DONNEE BRUT EXCEL ====================
 
         $spreadsheet = IOFactory::load('assets/excel/planning_test.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
@@ -33,7 +33,7 @@ class ExcelController extends AbstractController
             $data[] = $rowData;
         }
 
-        // ================== FONCTION VERIFICATION ==================
+        // ======================= FONCTION VERIFICATION ==================
         function dateRegex($date)
         {
             if (preg_match('/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/', $date)) {
@@ -56,7 +56,7 @@ class ExcelController extends AbstractController
             }
         }
 
-        //====================== RECUPERATION DONNEE PRINCIPALE ==========================
+        //===================== RECUPERATION DONNEE PRINCIPALE ==========================
         $mainData = [];
         $agentId = 0;
 
@@ -77,7 +77,7 @@ class ExcelController extends AbstractController
             }
         }
 
-        // ================== FORMATAGE DATE ===========================
+        // =========================== FORMATAGE DATE ===========================
 
         $dates = $mainData['date'];
         $dates = array_map(function ($dateString) {
@@ -86,7 +86,7 @@ class ExcelController extends AbstractController
 
         $mainData = array_splice($mainData, 1);
 
-        // ==================== FORMATAGE USER  ============================
+        // ============================ FORMATAGE USER ============================
         
         $userList = [];
         for ($id = 0; $id < count($mainData); $id++) {
@@ -120,7 +120,7 @@ class ExcelController extends AbstractController
                 $userList[$keyUser]['horaires'][$keyHoraire] = $horaire;
             }
         }
-        // ==================== CREATION ROULEMENTS ===================
+        // =========================== CREATION ROULEMENTS ========================
 
         $roulementList = [];
         foreach($userList as $user) {
