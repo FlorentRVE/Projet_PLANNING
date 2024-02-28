@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Roulement;
+use App\Entity\Service;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
 use DateTime;
@@ -87,13 +88,13 @@ class ExcelController extends AbstractController
         $mainData = array_splice($mainData, 1);
 
         // ============================ FORMATAGE USER ============================
-        
+
         $userList = [];
         for ($id = 0; $id < count($mainData); $id++) {
             $userList["user_" . $id] = array_splice($mainData, 0, 2);
-            $mainData = array_slice($mainData,0, 2);
+            $mainData = array_slice($mainData, 0, 2);
         }
-        
+
         for($i = 0; $i < count($userList); $i++) {
 
             $userList["user_" . $i]['name'] = $userList["user_" . $i]['services_' . $i][0];
@@ -103,7 +104,7 @@ class ExcelController extends AbstractController
         }
 
         foreach($userList as $keyUser => $user) {
-            
+
             foreach($user['horaires'] as $keyHoraire => $horaire) {
 
                 if(!horaireRegex($horaire)) {
@@ -115,13 +116,26 @@ class ExcelController extends AbstractController
                     $startTime = DateTime::createFromFormat('H:i', $heureService[0]);
                     $endTime = DateTime::createFromFormat('H:i', $heureService[1]);
                     $horaire = [$startTime, $endTime];
-                    
+
                 }
                 $userList[$keyUser]['horaires'][$keyHoraire] = $horaire;
             }
         }
         // =========================== CREATION ROULEMENTS ========================
 
+        function createService($er, $sr, $serviceName)
+        {
+            $service = new Service();
+            $service->setLabel($serviceName);
+
+            $er->persist($service);
+            $er->flush();
+
+            return $sr->findOneBy(['label' => $serviceName]);
+
+        }
+
+        dd($userList);
         $roulementList = [];
         foreach($userList as $user) {
 
@@ -130,17 +144,17 @@ class ExcelController extends AbstractController
                 $roulement = new Roulement();
                 $roulement->setAgent($userRepository->findOneBy(['username' => $user['name']]));
                 $roulement->setDate($dates[$num]);
-                $roulement->setService($serviceRepository->findOneBy(['label' => $user['services'][$num]]));
+                $roulement->setService($serviceRepository->findOneBy(['label' => $user['services'][$num]]) ? $serviceRepository->findOneBy(['label' => $user['services'][$num]]) : createService($entityManager, $serviceRepository, $user['services'][$num]));
                 $roulement->setPriseDeService($user['horaires'][$num][0]);
                 $roulement->setFinDeService($user['horaires'][$num][1]);
 
-                // $entityManager->persist($roulement);
-                // $entityManager->flush();
+                $entityManager->persist($roulement);
+                $entityManager->flush();
                 $roulementList[] = $roulement;
             }
         }
 
-        dd($roulementList);
+        // dd($roulementList);
 
         return new Response('Données importé avec succès');
     }
