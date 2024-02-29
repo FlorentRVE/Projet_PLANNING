@@ -136,7 +136,7 @@ class ExcelController extends AbstractController
         }
 
         // dd($userList);
-        $roulementList = [];
+        // $roulementList = [];
         foreach($userList as $user) {
 
             for($num = 0; $num < count($user['services']); $num++) {
@@ -148,8 +148,8 @@ class ExcelController extends AbstractController
                 $roulement->setPriseDeService($user['horaires'][$num][0]);
                 $roulement->setFinDeService($user['horaires'][$num][1]);
 
-                $entityManager->persist($roulement);
-                $entityManager->flush();
+                // $entityManager->persist($roulement);
+                // $entityManager->flush();
                 $roulementList[] = $roulement;
             }
         }

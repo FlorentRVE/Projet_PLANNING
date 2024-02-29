@@ -6,42 +6,85 @@
 
 <div class="flex flex-col justify-center items-center p-6">
 
-    <div class="flex justify-center items-center p-2 gap-4">
-        <a href="{{ path('app_roulement_index', {'tri': "ASC"}) }}"><button class="btn bg-sky-400">ASC</button></a>
-        <a href="{{ path('app_roulement_index', {'tri': "DESC"}) }}"><button class="btn bg-sky-400">DESC</button></a>        
+    <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
+        <a href="{{ path('app_roulement_new') }}" class="btn bg-sky-400 w-1/6 hover:bg-sky-300">Nouveau roulement</a>
+
+        <form action="#" method="get" class="w-2/6">
+            <label class="input input-bordered flex items-center gap-2">
+                <input type="text" id="search" name="search" value="{{ searchTerm }}" class="grow" placeholder="Rechercher" />
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" class="w-4 h-4 opacity-70"><path fill-rule="evenodd" d="M9.965 11.026a5 5 0 1 1 1.06-1.06l2.755 2.754a.75.75 0 1 1-1.06 1.06l-2.755-2.754ZM10.5 7a3.5 3.5 0 1 1-7 0 3.5 3.5 0 0 1 7 0Z" clip-rule="evenodd" /></svg>
+            </label>
+        </form>
     </div>
 
-    <table class="table bg-sky-300">
+    {# ==================== VER 1 ===================== #}
+
+    {# <table class="table">
         <thead>
-            <tr class="text-xl bg-sky-400">
-                <th>Agent</th>
-                <th>Service</th>
-                <th>Date</th>
-                <th>PriseDeService</th>
-                <th>FinDeService</th>
-                <th>Actions</th>
+            <tr class="text-xl text-center">
+                <th class="bg-white"></th>            
+            {% for user in users|slice(0, 1) %}
+                {% for roulement in user.roulements|slice(0, 7) %}        
+                    <th class="border-2 border-black bg-sky-400">{{ roulement.date ? roulement.date|date('d-m-Y') : '' }}</th>
+                {% endfor %}
+            {% endfor %}
             </tr>
         </thead>
-        <tbody>
-        {% for roulement in roulements %}
-            <tr>
-                <td>{{ roulement.agent.username }}</td>
-                <td class="bg-purple-400">{{ roulement.service.label }}</td>
-                <td>{{ roulement.date ? roulement.date|date('d-m-Y') : '' }}</td>
-                <td class="{{ roulement.priseDeService|date('H:i:s') is same as '00:00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-400'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i:s') : '' }}</td>
-                <td class="{{ roulement.finDeService|date('H:i:s') is same as '00:00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-300'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_roulement_edit', {'id': roulement.id}) }}">Modifier</a>
+        {% for user in users %}
+            <tbody>
+        <tr class="">
+            <td class="text-lg text-center border-2 border-black bg-sky-400">{{ user.username }}</td>
+
+            {% for roulement in user.roulements|slice(0, 7) %}        
+                <td class="bg-sky-300 text-xl text-center border-2 border-black p-0">
+                    <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
+                    <p class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-500 text-slate-50'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</p>
+                    <p class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-400 text-slate-50'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</p>
                 </td>
+            {% endfor %}
+        </tr>
+        {% else %}
+            <tr>
+                <td colspan="6" class="bg-sky-300 text-xl text-red-500">Aucun roulement correspondant</td>
+            </tr>
+        {% endfor %}
+            </tbody>
+    </table> #}
+
+    {# ==================== VER 2 ====================== #}
+    <table class="table text-center">
+        <thead>
+            <tr class="text-xl bg-sky-400">
+                <th class="bg-white"></th>
+                <th class="border-2 border-black">Service</th>
+                <th class="border-2 border-black">Date</th>
+                <th class="border-2 border-black">Prise de service</th>
+                <th class="border-2 border-black">Fin de service</th>
+                <th class="border-2 border-black">Actions</th>
+            </tr>
+        </thead>
+        {% for user in users %}
+        <tbody class="bg-sky-300">
+            <tr class="border-b-4 border-black">                
+                <td rowspan="{{ user.roulements|length + 1}}" class="border-2 border-black text-xl font-bold text-center">{{ user.username }}</td>
+                {% for roulement in user.roulements %} 
+                    <tr class="border-2 border-black">
+                        <td class="bg-purple-400 border-2 border-black">{{ roulement.service.label }}</td>
+                        <td>{{ roulement.date ? roulement.date|date('d-m-Y') : '' }}</td>
+                        <td class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-400'}} border-2 border-black">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</td>
+                        <td class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-300'}} border-2 border-black">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</td>
+                        <td>
+                            <a href="{{ path('app_roulement_edit', {'id': roulement.id}) }}" class='font-bold'>Modifier</a>
+                        </td>
+                    </tr>
+                {% endfor %}
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">no records found</td>
+                <td colspan="6" class="bg-sky-300 text-xl text-red-500">Aucun roulement correspondant</td>
             </tr>
-        {% endfor %}
         </tbody>
-    </table>
-
-    <a href="{{ path('app_roulement_new') }}" class="btn btn-primary w-1/3 mt-6">Create new</a>
+        {% endfor %}
+    </table> 
 </div>
 {% endblock %}

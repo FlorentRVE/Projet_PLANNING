@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Roulement;
 use App\Form\RoulementType;
 use App\Repository\RoulementRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -15,13 +16,27 @@ use Symfony\Component\Routing\Attribute\Route;
 class RoulementController extends AbstractController
 {
     #[Route('/', name: 'app_roulement_index', methods: ['GET'])]
-    public function index(RoulementRepository $roulementRepository, Request $request): Response
+    public function index(RoulementRepository $roulementRepository, Request $request, UserRepository $userRepository): Response
     {
-        $searchTerm = $request->query->get('tri');
+        $searchTerm = $request->query->get('search');
 
-        $roulement = $roulementRepository->findByTri($searchTerm);
+        $users = $userRepository->findAllMax($searchTerm);
 
         return $this->render('roulement/index.html.twig', [
+            'users' => $users,
+            'searchTerm' => $searchTerm
+        ]);
+    }
+
+    #[Route('/userDisplay', name: 'app_roulement_user', methods: ['GET'])]
+    public function userDisplay(RoulementRepository $roulementRepository, Request $request): Response
+    {
+        $searchTerm = $request->query->get('tri');
+        $user = 'RAMAYE LUDOVIC JACKY ELIE';
+
+        $roulement = $roulementRepository->findByTriAndUser($searchTerm, $user);
+
+        return $this->render('roulement/user.html.twig', [
             'roulements' => $roulement,
         ]);
     }
@@ -43,14 +58,6 @@ class RoulementController extends AbstractController
         return $this->render('roulement/new.html.twig', [
             'roulement' => $roulement,
             'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_roulement_show', methods: ['GET'])]
-    public function show(Roulement $roulement): Response
-    {
-        return $this->render('roulement/show.html.twig', [
-            'roulement' => $roulement,
         ]);
     }
 

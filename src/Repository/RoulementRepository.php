@@ -28,6 +28,19 @@ class RoulementRepository extends ServiceEntityRepository
             ->select('a, r')
             ->innerJoin('r.agent', 'a')
             ->orderBy('a.username', $value)
+            ->setMaxResults(20)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+    public function findByTriAndUser($value, $user)
+    {
+        return $this->createQueryBuilder('r')
+            ->select('a, r')
+            ->innerJoin('r.agent', 'a')
+            ->andWhere('a.username = :u')
+            ->setParameter('u', $user)
+            ->orderBy('r.date', $value)
             ->getQuery()
             ->getResult()
         ;
