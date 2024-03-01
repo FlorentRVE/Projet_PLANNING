@@ -32,7 +32,7 @@ class RoulementController extends AbstractController
     public function userDisplay(RoulementRepository $roulementRepository, Request $request): Response
     {
         $searchTerm = $request->query->get('tri');
-        $user = 'RAMAYE LUDOVIC JACKY ELIE';
+        $user = 'ANAS KARINE';
 
         $roulement = $roulementRepository->findByTriAndUser($searchTerm, $user);
 

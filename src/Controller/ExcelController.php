@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Roulement;
 use App\Entity\Service;
+use App\Repository\RoulementRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
 use DateTime;
@@ -16,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExcelController extends AbstractController
 {
     #[Route('/import', name: 'app_import_excel')]
-    public function importExcel(UserRepository $userRepository, ServiceRepository $serviceRepository, EntityManagerInterface $entityManager): Response
+    public function importExcel(RoulementRepository $roulementRepository, UserRepository $userRepository, ServiceRepository $serviceRepository, EntityManagerInterface $entityManager): Response
     {
         // ======================= DONNEE BRUT EXCEL ====================
 
@@ -91,7 +92,7 @@ class ExcelController extends AbstractController
 
         $userList = [];
         $sliceID = 0;
-        for ($id = 0; $id < count($mainData)/2; $id++) {
+        for ($id = 0; $id < count($mainData) / 2; $id++) {
             $userList["user_" . $id] = array_slice($mainData, $sliceID, 2);
             $sliceID += 2;
         }
@@ -137,20 +138,30 @@ class ExcelController extends AbstractController
 
         // dd($userList);
         // $roulementList = [];
+
         foreach($userList as $user) {
 
             for($num = 0; $num < count($user['services']); $num++) {
 
+                $agent = $userRepository->findOneBy(['username' => $user['name']]);
+                $currentRoulement = $roulementRepository->findOneBy(['agent' => $agent, 'date' => $dates[$num]]);
+
+                if(isset($currentRoulement)) {
+
+                    $entityManager->remove($currentRoulement);
+                } 
+
                 $roulement = new Roulement();
-                $roulement->setAgent($userRepository->findOneBy(['username' => $user['name']]));
+                $roulement->setAgent($agent);
                 $roulement->setDate($dates[$num]);
                 $roulement->setService($serviceRepository->findOneBy(['label' => $user['services'][$num]]) ? $serviceRepository->findOneBy(['label' => $user['services'][$num]]) : createService($entityManager, $serviceRepository, $user['services'][$num]));
                 $roulement->setPriseDeService($user['horaires'][$num][0]);
                 $roulement->setFinDeService($user['horaires'][$num][1]);
 
-                // $entityManager->persist($roulement);
-                // $entityManager->flush();
-                $roulementList[] = $roulement;
+                $entityManager->persist($roulement);
+                $entityManager->flush();
+
+                // $roulementList[] = $roulement;
             }
         }
 

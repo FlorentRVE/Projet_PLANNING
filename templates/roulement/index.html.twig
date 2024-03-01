@@ -19,8 +19,18 @@
 
     {# ==================== VER 1 ===================== #}
 
-    {# <table class="table">
+    <table class="table">
         <thead>
+            <tr>
+                <th class="bg-white"></th>
+                <th>Lun</th>
+                <th>Mar</th>
+                <th>Mer</th>
+                <th>Jeu</th>
+                <th>Ven</th>
+                <th>Sam</th>
+                <th>Dim</th>
+            </tr>
             <tr class="text-xl text-center">
                 <th class="bg-white"></th>            
             {% for user in users|slice(0, 1) %}
@@ -49,10 +59,10 @@
             </tr>
         {% endfor %}
             </tbody>
-    </table> #}
+    </table>
 
     {# ==================== VER 2 ====================== #}
-    <table class="table text-center">
+    {# <table class="table text-center">
         <thead>
             <tr class="text-xl bg-sky-400">
                 <th class="bg-white"></th>
@@ -60,7 +70,6 @@
                 <th class="border-2 border-black">Date</th>
                 <th class="border-2 border-black">Prise de service</th>
                 <th class="border-2 border-black">Fin de service</th>
-                <th class="border-2 border-black">Actions</th>
             </tr>
         </thead>
         {% for user in users %}
@@ -73,9 +82,6 @@
                         <td>{{ roulement.date ? roulement.date|date('d-m-Y') : '' }}</td>
                         <td class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-400'}} border-2 border-black">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</td>
                         <td class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-300'}} border-2 border-black">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</td>
-                        <td>
-                            <a href="{{ path('app_roulement_edit', {'id': roulement.id}) }}" class='font-bold'>Modifier</a>
-                        </td>
                     </tr>
                 {% endfor %}
             </tr>
@@ -85,6 +91,6 @@
             </tr>
         </tbody>
         {% endfor %}
-    </table> 
+    </table>  #}
 </div>
 {% endblock %}
