@@ -7,7 +7,10 @@
 <div class="flex flex-col justify-center items-center p-6">
 
     <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
-        <a href="{{ path('app_roulement_new') }}" class="btn bg-sky-400 w-1/6 hover:bg-sky-300">Nouveau roulement</a>
+        <div class="flex flex-col gap-2">
+            <p class="py-2 px-4 bg-green-500 rounded-l text-black text-center">Prise de Service</p>
+            <p class="py-2 px-4 bg-orange-400 rounded-l text-black text-center">Fin de Service</p>
+        </div>
 
         <form action="#" method="get" class="w-2/6">
             <label class="input input-bordered flex items-center gap-2">
@@ -17,22 +20,29 @@
         </form>
     </div>
 
+    <div class="flex justify-between items-center p-2 w-full">
+        <div>
+        </div>
+
+        <div class="text-blue-700 font-bold text-xl">{{ knp_pagination_render(users) }}</div>
+    </div>
+
     {# ==================== VER 1 ===================== #}
 
     <table class="table">
         <thead>
             <tr>
-                <th class="bg-white"></th>
-                <th>Lun</th>
-                <th>Mar</th>
-                <th>Mer</th>
-                <th>Jeu</th>
-                <th>Ven</th>
-                <th>Sam</th>
-                <th>Dim</th>
+                <th class=""></th>
+                <th class="text-center text-xl font-bold">Lun</th>
+                <th class="text-center text-xl font-bold">Mar</th>
+                <th class="text-center text-xl font-bold">Mer</th>
+                <th class="text-center text-xl font-bold">Jeu</th>
+                <th class="text-center text-xl font-bold">Ven</th>
+                <th class="text-center text-xl font-bold">Sam</th>
+                <th class="text-center text-xl font-bold">Dim</th>
             </tr>
             <tr class="text-xl text-center">
-                <th class="bg-white"></th>            
+                <th></th>          
             {% for user in users|slice(0, 1) %}
                 {% for roulement in user.roulements|slice(0, 7) %}        
                     <th class="border-2 border-black bg-sky-400">{{ roulement.date ? roulement.date|date('d-m-Y') : '' }}</th>
@@ -41,24 +51,24 @@
             </tr>
         </thead>
         {% for user in users %}
-            <tbody>
-        <tr class="">
-            <td class="text-lg text-center border-2 border-black bg-sky-400">{{ user.username }}</td>
+        <tbody>
+            <tr class="">
+                <td class="text-lg text-center border-2 border-black bg-sky-400">{{ user.username }}</td>
 
-            {% for roulement in user.roulements|slice(0, 7) %}        
-                <td class="bg-sky-300 text-xl text-center border-2 border-black p-0">
-                    <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
-                    <p class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-500 text-slate-50'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</p>
-                    <p class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-400 text-slate-50'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</p>
-                </td>
-            {% endfor %}
-        </tr>
-        {% else %}
-            <tr>
-                <td colspan="6" class="bg-sky-300 text-xl text-red-500">Aucun roulement correspondant</td>
+                {% for roulement in user.roulements|slice(0, 7) %}        
+                    <td class="bg-sky-300 text-xl text-center border-2 border-black p-0">
+                        <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
+                        <p class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-500 text-slate-50'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</p>
+                        <p class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-400 text-slate-50'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</p>
+                    </td>
+                {% endfor %}
             </tr>
-        {% endfor %}
-            </tbody>
+            {% else %}
+                <tr>
+                    <td colspan="6" class="bg-sky-300 text-xl text-red-500">Aucun roulement correspondant</td>
+                </tr>
+            {% endfor %}
+        </tbody>
     </table>
 
     {# ==================== VER 2 ====================== #}

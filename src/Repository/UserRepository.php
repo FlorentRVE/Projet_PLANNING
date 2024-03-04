@@ -41,12 +41,22 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     
-   public function findAllMax($value): array
+   public function findUserBySearch($value): array
    {
        return $this->createQueryBuilder('u')
             ->andWhere('u.username LIKE :value OR :value = \'\'')
             ->setParameter('value', '%'.$value.'%')
-            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult()
+       ;
+
+    }
+   public function findUserOrdered($value): array
+   {
+       return $this->createQueryBuilder('u')
+            ->andWhere('u.username LIKE :value OR :value = \'\'')
+            ->setParameter('value', '%'.$value.'%')
+            ->orderBy('u.username', 'ASC')
             ->getQuery()
             ->getResult()
        ;

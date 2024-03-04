@@ -25,7 +25,7 @@ class ImportCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('Cette commande permet d\'importer les données d\'un fichier Excel')
+            ->setHelp('Cette commande permet d\'importer les données du fichier Excel ABC Planning')
         ;
     }
 

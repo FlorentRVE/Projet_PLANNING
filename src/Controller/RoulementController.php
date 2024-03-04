@@ -7,6 +7,7 @@ use App\Form\RoulementType;
 use App\Repository\RoulementRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,14 +17,20 @@ use Symfony\Component\Routing\Attribute\Route;
 class RoulementController extends AbstractController
 {
     #[Route('/', name: 'app_roulement_index', methods: ['GET'])]
-    public function index(RoulementRepository $roulementRepository, Request $request, UserRepository $userRepository): Response
+    public function index(Request $request, UserRepository $userRepository, PaginatorInterface $paginator): Response
     {
         $searchTerm = $request->query->get('search');
 
-        $users = $userRepository->findAllMax($searchTerm);
+        $data = $userRepository->findUserBySearch($searchTerm);
+
+        $data = $paginator->paginate(
+            $data,
+            $request->query->getInt('page', 1),
+            10
+        );
 
         return $this->render('roulement/index.html.twig', [
-            'users' => $users,
+            'users' => $data,
             'searchTerm' => $searchTerm
         ]);
     }
