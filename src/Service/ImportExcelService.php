@@ -26,7 +26,7 @@ class ImportExcelService
     {
         // ======================= DONNEE BRUT EXCEL ====================
 
-        $spreadsheet = IOFactory::load('assets/excel/ABC - Planning semaine.xls');
+        $spreadsheet = IOFactory::load(__DIR__.'/../../public/assets/excel/ABC - Planning semaine.xls');
         $sheet = $spreadsheet->getActiveSheet();
 
         $data = [];
