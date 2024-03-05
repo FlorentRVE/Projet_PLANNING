@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Roulement;
 use App\Form\RoulementType;
+use App\Repository\FerieRepository;
 use App\Repository\RoulementRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -17,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class RoulementController extends AbstractController
 {
     #[Route('/', name: 'app_roulement_index', methods: ['GET'])]
-    public function index(Request $request, UserRepository $userRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, UserRepository $userRepository, FerieRepository $ferieRepository, PaginatorInterface $paginator): Response
     {
         $searchTerm = $request->query->get('search');
         $categorie = $request->query->get('cat');
@@ -30,9 +31,12 @@ class RoulementController extends AbstractController
             10
         );
 
+        $ferie = $ferieRepository->findAll();
+
         return $this->render('roulement/index.html.twig', [
             'users' => $data,
-            'searchTerm' => $searchTerm
+            'searchTerm' => $searchTerm,
+            'ferie' => $ferie
         ]);
     }
 
