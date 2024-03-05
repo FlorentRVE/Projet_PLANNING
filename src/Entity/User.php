@@ -37,6 +37,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Roulement::class, mappedBy: 'agent')]
     private Collection $roulements;
 
+    #[ORM\Column(length: 255)]
+    private ?string $matricule = null;
+
+    #[ORM\ManyToOne(inversedBy: 'users')]
+    private ?Categorie $categorie = null;
+
     public function __construct()
     {
         $this->roulements = new ArrayCollection();
@@ -143,6 +149,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
                 $roulement->setAgent(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getMatricule(): ?string
+    {
+        return $this->matricule;
+    }
+
+    public function setMatricule(string $matricule): static
+    {
+        $this->matricule = $matricule;
+
+        return $this;
+    }
+
+    public function getCategorie(): ?Categorie
+    {
+        return $this->categorie;
+    }
+
+    public function setCategorie(?Categorie $categorie): static
+    {
+        $this->categorie = $categorie;
 
         return $this;
     }

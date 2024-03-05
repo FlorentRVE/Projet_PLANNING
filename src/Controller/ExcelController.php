@@ -15,11 +15,19 @@ class ExcelController extends AbstractController
     {
     }
 
-    #[Route('/import', name: 'app_import_excel')]
-    public function importExcel(): Response
-    {
-        $this->importExcel->importExcel();
+    // #[Route('/import', name: 'app_import_excel')]
+    // public function importExcel(): Response
+    // {
+    //     $this->importExcel->importExcel();
 
-        return new Response('Données importé avec succès');
-    }
+    //     return new Response('Données importé avec succès');
+    // }
+
+    // #[Route('/import', name: 'app_import_excel')]
+    // public function importExcel(): Response
+    // {
+    //     $this->importExcel->importCategory();
+
+    //     return new Response('Données importé avec succès');
+    // }
 }

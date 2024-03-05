@@ -40,27 +40,31 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    
-   public function findUserBySearch($value): array
-   {
-       return $this->createQueryBuilder('u')
-            ->andWhere('u.username LIKE :value OR :value = \'\'')
-            ->setParameter('value', '%'.$value.'%')
-            ->getQuery()
-            ->getResult()
-       ;
+
+    public function findUserBySearch($value, $categorie): array
+    {
+        return $this->createQueryBuilder('u')
+             ->innerJoin('u.categorie', 'c')
+             ->andWhere('c.label LIKE :valueCat')
+             ->andWhere('u.username LIKE :value OR :value = \'\'')
+             ->setParameter('valueCat', '%'.$categorie.'%')
+             ->setParameter('value', '%'.$value.'%')
+             ->orderBy('u.username', 'ASC')
+             ->getQuery()
+             ->getResult()
+        ;
 
     }
-   public function findUserOrdered($value): array
-   {
-       return $this->createQueryBuilder('u')
-            ->andWhere('u.username LIKE :value OR :value = \'\'')
-            ->setParameter('value', '%'.$value.'%')
-            ->orderBy('u.username', 'ASC')
-            ->getQuery()
-            ->getResult()
-       ;
-   }
+    public function findUserOrdered($value): array
+    {
+        return $this->createQueryBuilder('u')
+             ->andWhere('u.username LIKE :value OR :value = \'\'')
+             ->setParameter('value', '%'.$value.'%')
+             ->orderBy('u.username', 'ASC')
+             ->getQuery()
+             ->getResult()
+        ;
+    }
 
 
     //    /**

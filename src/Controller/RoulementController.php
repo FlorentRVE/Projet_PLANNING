@@ -20,8 +20,9 @@ class RoulementController extends AbstractController
     public function index(Request $request, UserRepository $userRepository, PaginatorInterface $paginator): Response
     {
         $searchTerm = $request->query->get('search');
+        $categorie = $request->query->get('cat');
 
-        $data = $userRepository->findUserBySearch($searchTerm);
+        $data = $userRepository->findUserBySearch($searchTerm, $categorie);
 
         $data = $paginator->paginate(
             $data,
@@ -35,7 +36,7 @@ class RoulementController extends AbstractController
         ]);
     }
 
-    #[Route('/userDisplay', name: 'app_roulement_user', methods: ['GET'])]
+    #[Route('/indiv', name: 'app_roulement_user', methods: ['GET'])]
     public function userDisplay(RoulementRepository $roulementRepository, Request $request): Response
     {
         $searchTerm = $request->query->get('tri');

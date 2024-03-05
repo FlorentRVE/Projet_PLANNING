@@ -2,9 +2,12 @@
 
 namespace App\Service;
 
+use App\Entity\Categorie;
 use DateTime;
 use App\Entity\Service;
 use App\Entity\Roulement;
+use App\Entity\User;
+use App\Repository\CategorieRepository;
 use App\Repository\RoulementRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
@@ -14,12 +17,12 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 class ImportExcelService
 {
     public function __construct(
-        private RoulementRepository $roulementRepository, 
-        private UserRepository $userRepository, 
-        private ServiceRepository $serviceRepository, 
+        private RoulementRepository $roulementRepository,
+        private UserRepository $userRepository,
+        private ServiceRepository $serviceRepository,
+        private CategorieRepository $categorieRepository,
         private EntityManagerInterface $entityManager
-        )
-    {        
+    ) {
     }
 
     public function importExcel()
@@ -171,5 +174,53 @@ class ImportExcelService
         }
 
         // dd($roulementList);
+    }
+
+    // ===========================
+
+    public function importCategory()
+    {
+
+        $spreadsheet = IOFactory::load(__DIR__.'/../../public/assets/excel/LISTE CDT 2024.xlsx');
+        $sheet = $spreadsheet->getActiveSheet();
+
+        $data = [];
+        foreach ($sheet->getRowIterator() as $row) {
+            $rowData = [];
+            foreach ($row->getCellIterator() as $cell) {
+                if($cell->getValue() != null) {
+                    $rowData[] = $cell->getValue();
+                }
+            }
+            $data[] = $rowData;
+        }
+        
+        function createCategorie($er, $sr, $serviceName)
+        {
+            $service = new Categorie();
+            $service->setLabel($serviceName);
+
+            $er->persist($service);
+            $er->flush();
+
+            return $sr->findOneBy(['label' => $serviceName]);
+        }
+
+        foreach($data as $user) {
+            $userBDD = $this->userRepository->findOneBy(['username' => $user[0]]);
+            $matricule = $user[1];
+
+            if($userBDD) {
+
+                $userBDD->setMatricule($matricule);
+                if(isset($user[2])) {
+
+                    $userBDD->setCategorie($this->categorieRepository->findOneBy(['label' => $user[2]]) ? $this->categorieRepository->findOneBy(['label' => $user[2]]) : createCategorie($this->entityManager, $this->categorieRepository, $user[2]));
+                }
+
+                $this->entityManager->persist($userBDD);
+                $this->entityManager->flush();
+            }
+        }
     }
 }
