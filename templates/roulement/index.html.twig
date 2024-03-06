@@ -42,7 +42,7 @@
         <div class="text-blue-700 font-bold text-xl">{{ knp_pagination_render(users) }}</div>
     </div>
 
-    {# ==================== VER 1 ===================== #}
+    {# ==================== TABLEAU ===================== #}
 
     <table class="table">
         <thead>
@@ -85,37 +85,5 @@
             {% endfor %}
         </tbody>
     </table>
-
-    {# ==================== VER 2 ====================== #}
-    {# <table class="table text-center">
-        <thead>
-            <tr class="text-xl bg-sky-400">
-                <th class="bg-white"></th>
-                <th class="border-2 border-black">Service</th>
-                <th class="border-2 border-black">Date</th>
-                <th class="border-2 border-black">Prise de service</th>
-                <th class="border-2 border-black">Fin de service</th>
-            </tr>
-        </thead>
-        {% for user in users %}
-        <tbody class="bg-sky-300">
-            <tr class="border-b-4 border-black">                
-                <td rowspan="{{ user.roulements|length + 1}}" class="border-2 border-black text-xl font-bold text-center">{{ user.username }}</td>
-                {% for roulement in user.roulements %} 
-                    <tr class="border-2 border-black">
-                        <td class="bg-purple-400 border-2 border-black">{{ roulement.service.label }}</td>
-                        <td>{{ roulement.date ? roulement.date|date('d-m-Y') : '' }}</td>
-                        <td class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-400'}} border-2 border-black">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</td>
-                        <td class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-300'}} border-2 border-black">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</td>
-                    </tr>
-                {% endfor %}
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6" class="bg-sky-300 text-xl text-red-500">Aucun roulement correspondant</td>
-            </tr>
-        </tbody>
-        {% endfor %}
-    </table>  #}
 </div>
 {% endblock %}
