@@ -13,7 +13,7 @@
             <p class="font-bold undeline text-red-600 text-lg text-center mb-2 pb-2 border-b-2 border-b-red-600">Jour fériés du mois</p>
 
             {% for day in ferie %}
-                {% if day.date|date('m') == "now"|date('m') %}
+                {% if day.date|date('m') == "may"|date('m') %}
                     <p>{{ day.label }}</p>
                 {% endif %}
             {% endfor %}
@@ -36,6 +36,7 @@
             <a href="{{ path('app_roulement_index', {'cat': "ROULEMENT"}) }}"><button class="btn bg-sky-400 hover:bg-sky-300">ROULEMENT</button></a>
             <a href="{{ path('app_roulement_index', {'cat': "CONTROL"}) }}"><button class="btn bg-sky-400 hover:bg-sky-300">CONTROLLEUR</button></a>        
             <a href="{{ path('app_roulement_index', {'cat': ""}) }}"><button class="btn bg-sky-400 hover:bg-sky-300">TOUS</button></a>        
+            <a href="{{ path('app_roulement_user') }}"><button class="btn bg-sky-400 hover:bg-sky-300">EXEMPLE VUE PERSO</button></a>        
         </div>
 
         <div class="text-blue-700 font-bold text-xl">{{ knp_pagination_render(users) }}</div>

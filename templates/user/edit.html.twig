@@ -1,13 +1,23 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit User{% endblock %}
+{% block title %}Modifier l'utilisateur{% endblock %}
 
 {% block body %}
-    <h1>Edit User</h1>
+    <div class="bg-sky-200 min-h-screen">
+        <h1 class="text-center text-3xl uppercase text-slate-900 font-bold py-5 shadow-xl">👤 Modifier utilisateur</h1>
 
-    {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
+        {# ======== Formulaire de modification ========= #}
+        {{ include('user/_form.html.twig', {'button_label': "Modifier l'utilisateur"}) }}
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+        {# ========= Boutons d'actions ======== #}
+        <div class="flex justify-between w-4/5 mx-auto">
 
-    {{ include('user/_delete_form.html.twig') }}
+            <a href="{{ path('app_user_index') }}"  class="bg-sky-800 text-slate-50 rounded-2xl text-center px-5 py-3 hover:brightness-125 shadow-lg font-semibold">Retour à la liste</a>
+            <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('Voulez vous vraiment supprimer cet utilisateur ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                <button class="btn bg-red-600 rounded-2xl text-center px-5 py-3 hover:brightness-125 shadow-lg font-semibold text-slate-100">Supprimer</button>
+            </form>
+
+        </div>
+    </div>
 {% endblock %}
