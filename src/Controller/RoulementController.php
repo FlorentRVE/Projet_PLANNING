@@ -22,21 +22,23 @@ class RoulementController extends AbstractController
     {
         $searchTerm = $request->query->get('search');
         $categorie = $request->query->get('cat');
+        $range = $request->query->get('range');
 
         $data = $userRepository->findUserBySearch($searchTerm, $categorie);
 
-        $data = $paginator->paginate(
-            $data,
-            $request->query->getInt('page', 1),
-            10
-        );
+        // $data = $paginator->paginate(
+        //     $data,
+        //     $request->query->getInt('page', 1),
+        //     10
+        // );
 
         $ferie = $ferieRepository->findAll();
 
         return $this->render('roulement/index.html.twig', [
             'users' => $data,
             'searchTerm' => $searchTerm,
-            'ferie' => $ferie
+            'ferie' => $ferie,
+            'range' => $range,
         ]);
     }
 
