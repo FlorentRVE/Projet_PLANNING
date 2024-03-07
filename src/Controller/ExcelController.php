@@ -2,11 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Ferie;
 use App\Service\ImportExcelService;
-use DateTime;
-use DateTimeImmutable;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ImportTxtService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -14,18 +11,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExcelController extends AbstractController
 {    
     public function __construct(
-        private ImportExcelService $importExcel
+        private ImportTxtService $importTxt,
         )
     {
     }
 
-    // #[Route('/import', name: 'app_import_excel')]
-    // public function importExcel(): Response
-    // {
-    //     $this->importExcel->importExcel();
+    #[Route('/import', name: 'app_import_excel')]
+    public function importExcel(): Response
+    {
+        $this->importTxt->importTxt();
 
-    //     return new Response('Données importé avec succès');
-    // }
+        return new Response('Données importé avec succès');
+    }
 
     // #[Route('/import', name: 'app_import_excel')]
     // public function importExcel(): Response
