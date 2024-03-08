@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ServiceRepository::class)]
+// #[ORM\Index(columns: ["label"])]
 class Service
 {
     #[ORM\Id]

@@ -16,11 +16,44 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ServiceRepository extends ServiceEntityRepository
 {
+    private ?array $services = null;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Service::class);
     }
 
+    public function findOrCreate(string $label)
+    {
+        if ($this->services === null) {
+            $this->services = $this->loadAll();
+        }
+
+        // on cree l'entite si elle n'existe pas
+        if (!array_key_exists($label, $this->services)) {
+            $service = (new Service())->setLabel($label);
+            $this->getEntityManager()->persist($service);
+            $this->getEntityManager()->flush();
+
+            $this->services[$label] = $service;
+        }
+
+        return $this->services[$label];
+    }
+
+
+    /**
+     * @return Service[] Returns an array of Service objects
+     */
+    public function loadAll(): array
+    {
+        return $this
+               ->createQueryBuilder('s', 's.label')
+               ->getQuery()
+               ->getResult()
+        ;
+    }
+    
     //    /**
     //     * @return Service[] Returns an array of Service objects
     //     */

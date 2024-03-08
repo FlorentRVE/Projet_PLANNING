@@ -21,6 +21,8 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
+    private ?array $users = null;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
@@ -63,6 +65,38 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
              ->orderBy('u.username', 'ASC')
              ->getQuery()
              ->getResult()
+        ;
+    }
+
+    
+    public function findOrCreate(string $matricule)
+    {
+        if ($this->users === null) {
+            $this->users = $this->loadAll();
+        }
+
+        // on cree l'entite si elle n'existe pas
+        if (!array_key_exists($matricule, $this->users)) {
+            $user = (new User())->setMatricule($matricule);
+            
+            $this->getEntityManager()->persist($user);
+            $this->getEntityManager()->flush();
+
+            $this->users[$matricule] = $user;
+        }
+
+        return $this->services[$matricule];
+    }
+
+    /**
+     * @return User[] Returns an array of User objects
+     */
+    public function loadAll(): array
+    {
+        return $this
+               ->createQueryBuilder('u', 'u.matricule')
+               ->getQuery()
+               ->getResult()
         ;
     }
 
