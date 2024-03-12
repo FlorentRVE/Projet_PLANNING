@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Service\ImportExcelService;
 use App\Service\ImportTxtService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,20 +15,12 @@ class ExcelController extends AbstractController
     {
     }
 
-    #[Route('/import', name: 'app_import_excel')]
-    public function importExcel(): Response
+    #[Route('/import', name: 'app_import_txt')]
+    public function importTxt(): Response
     {
         $this->importTxt->importTxt();
 
-        return new Response('Données importé avec succès');
+        return new Response('|| Données importé avec succès ! ||');
     }
-
-    // #[Route('/import', name: 'app_import_excel')]
-    // public function importExcel(): Response
-    // {
-    //     $this->importExcel->importCategory();
-
-    //     return new Response('Données importé avec succès');
-    // }
  
 }

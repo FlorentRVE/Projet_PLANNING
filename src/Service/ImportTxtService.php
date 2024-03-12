@@ -2,20 +2,13 @@
 
 namespace App\Service;
 
-use App\Entity\Categorie;
 use DateTime;
-use App\Entity\Service;
-use App\Entity\Roulement;
-use App\Entity\User;
 use App\Repository\CategorieRepository;
 use App\Repository\RoulementRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
-
-use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 
 class ImportTxtService
 {
@@ -34,7 +27,7 @@ class ImportTxtService
 
         $reader = new Csv();
         $reader->setDelimiter("\t");
-        $spreadsheet = $reader->load(__DIR__.'/../../public/assets/txt/AT240306.TXT');
+        $spreadsheet = $reader->load(__DIR__.'/../../public/assets/txt/AT240312.TXT');
         $data = $spreadsheet->getActiveSheet()->toArray();
 
 
@@ -85,6 +78,13 @@ class ImportTxtService
                             }
                         }
                         break;
+                    case("4"):
+                        foreach($mainData as $key => $services) {
+                            if($services['matricule'] == $row[1]) {
+                                $mainData[$key]['nom'] = $row[2];
+                            }
+                        }
+
                 }
             }
         }
@@ -125,7 +125,6 @@ class ImportTxtService
         // dd($mainDataCRW);
         // =========================== CREATION ROULEMENTS ========================
 
-        // dd($userList);
         $roulementList = [];
 
         foreach($mainData as $service) {
@@ -134,38 +133,35 @@ class ImportTxtService
 
                 if($service['service'] == $rotation['service']) {
 
-                    $agent = $this->userRepository->findOneBy(['matricule' => $service['matricule']]);
-                    $serv = $this->serviceRepository->findOrCreate($service['service']);
 
-                    // $agent = $this->userRepository->findOrCreate($service['matricule']);
+                    if($rotation['lieuPriseService'] == 'DEPOT') {
+                        $priseService = $rotation['heurePriseService'];
+                    }
 
-                    // $currentRoulement = $this->roulementRepository->findOneBy(['agent' => $agent, 'date' => $date]);
-                    $currentRoulement = $this->roulementRepository->findOrCreate(['agent' => $service['matricule'], 'date' => $date]);
+                    if($rotation['lieuFinService'] == 'DEPOT') {
+                        $finService = $rotation['heureFinService'];
+                    }
 
-                    if(isset($currentRoulement)) {
+                    $nomService = $service['service'];
+                    $matricule = $service['matricule'];
+                    $nomAgent = $service['nom'];
 
-                        $currentRoulement->setAgent($agent);
-                        $currentRoulement->setDate($date);
-                        $currentRoulement->setService($serv);
-                        $currentRoulement->setPriseDeService(DateTime::createFromFormat('H:i', $rotation['heurePriseService']));
-                        $currentRoulement->setFinDeService(DateTime::createFromFormat('H:i', $rotation['heureFinService']));
+                    $serv = $this->serviceRepository->findOrCreate($nomService);
+                    $agent = $this->userRepository->findOrCreate($matricule, $nomAgent);
 
-                    } else {
+                    if(isset($priseService) && isset($finService)) {
 
-                        $roulement = new Roulement();
-                        $roulement->setAgent($agent);
-                        $roulement->setDate($date);
-                        $roulement->setService($serv);
-                        $roulement->setPriseDeService(DateTime::createFromFormat('H:i', $rotation['heurePriseService']));
-                        $roulement->setFinDeService(DateTime::createFromFormat('H:i', $rotation['heureFinService']));
+                        $roulement = $this->roulementRepository->findOrCreate($agent, $date, $serv, $priseService, $finService);
                     }
 
 
-                    // $this->entityManager->persist($roulement);
-                    // $this->entityManager->flush();
+                    if(isset($roulement)) {
 
-                    dd($roulement);
-                    $roulementList[] = $roulement;
+                        $this->entityManager->persist($roulement);
+                        $this->entityManager->flush();
+                    }
+
+                    // if(isset($roulement)) $roulementList[] = $roulement;
                 }
             }
         }

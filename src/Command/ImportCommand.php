@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\ImportExcelService;
+use App\Service\ImportTxtService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,12 +11,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:import',
-    description: 'Import data from excel',
+    description: 'Importe les données depuis les fichiers ABC et CRW',
 )]
 class ImportCommand extends Command
 {
     public function __construct(
-        private ImportExcelService $importExcel
+        private ImportTxtService $importTxt,
     )
     {
         parent::__construct();
@@ -25,7 +25,7 @@ class ImportCommand extends Command
     protected function configure(): void
     {
         $this
-            ->setHelp('Cette commande permet d\'importer les données du fichier Excel ABC Planning')
+            ->setHelp('Cette commande permet d\'importer les données des fichiers ABC et CRW afin de créer les roulements dans la base de données.')
         ;
     }
 
@@ -33,7 +33,7 @@ class ImportCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
         
-        $this->importExcel->importExcel();
+        $this->importTxt->importTxt();
         $io->success('Les données ont été importées dans la base de données !');
 
         return Command::SUCCESS;

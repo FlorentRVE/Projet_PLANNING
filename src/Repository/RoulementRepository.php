@@ -3,9 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\Roulement;
+use App\Entity\Service;
 use App\Entity\User;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use PhpParser\Node\Expr\Cast\String_;
 
 /**
  * @extends ServiceEntityRepository<Roulement>
@@ -49,36 +52,55 @@ class RoulementRepository extends ServiceEntityRepository
         ;
     }
 
-        public function findOrCreate(string $agent, \DateTime $date)
+    /////////////////////////////////////////////////////////////////////////
+
+    public function findOrCreate(User $agent, \DateTime $date, Service $serv, $priseService, $finService)
     {
         if ($this->roulements === null) {
-            $this->roulements = $this->loadAll();
+            $this->roulements = $this->loadAll($date);
         }
 
         // on cree l'entite si elle n'existe pas
-        if (!array_key_exists($agent, $this->roulements)) {
-            $roulement = (new Roulement())->setAgent($agent);
-            
-            $this->getEntityManager()->persist($roulement);
-            $this->getEntityManager()->flush();
+        if (!array_key_exists($agent->getId(), $this->roulements)) {
 
-            // $this->roulement[$matricule] = $roulement;
+            $roulement = new Roulement();
+            $roulement->setAgent($agent);
+            $roulement->setDate($date);
+            $roulement->setService($serv);
+            $roulement->setPriseDeService(DateTime::createFromFormat('H:i', $priseService));
+            $roulement->setFinDeService(DateTime::createFromFormat('H:i', $finService));
+
+            $this->roulements[$agent->getId()] = $roulement;
+
+        } else {
+
+            $this->roulements[$agent->getId()]->setAgent($agent);
+            $this->roulements[$agent->getId()]->setDate($date);
+            $this->roulements[$agent->getId()]->setService($serv);
+            $this->roulements[$agent->getId()]->setPriseDeService(DateTime::createFromFormat('H:i', $priseService));
+            $this->roulements[$agent->getId()]->setFinDeService(DateTime::createFromFormat('H:i', $finService));
+
         }
 
-        return $this->roulement;
+        return $this->roulements[$agent->getId()];
+
     }
 
     /**
-     * @return User[] Returns an array of User objects
+     * @return Roulement[] Returns an array of User objects
      */
-    public function loadAll(): array
+    public function loadAll(DateTime $date): array
     {
         return $this
                ->createQueryBuilder('r', 'r.agent')
+               ->andWhere('r.date = :date')
+               ->setParameter('date', $date->format('Y-m-d'))
                ->getQuery()
                ->getResult()
         ;
     }
+
+    ///////////////////////////////////////////////////////////////////////
 
     //    /**
     //     * @return Roulement[] Returns an array of Roulement objects

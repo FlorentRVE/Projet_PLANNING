@@ -69,7 +69,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
     
-    public function findOrCreate(string $matricule)
+    public function findOrCreate(string $matricule, string $nom)
     {
         if ($this->users === null) {
             $this->users = $this->loadAll();
@@ -77,7 +77,11 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         // on cree l'entite si elle n'existe pas
         if (!array_key_exists($matricule, $this->users)) {
-            $user = (new User())->setMatricule($matricule);
+            $user = new User();
+            $user->setMatricule($matricule);
+            $user->setUsername($nom);
+            $user->setCategorie(null);
+            $user->setPassword('test');
             
             $this->getEntityManager()->persist($user);
             $this->getEntityManager()->flush();
@@ -85,7 +89,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             $this->users[$matricule] = $user;
         }
 
-        return $this->services[$matricule];
+        return $this->users[$matricule];
     }
 
     /**
