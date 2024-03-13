@@ -21,8 +21,8 @@ class DebugController extends AbstractController
     public function index(RoulementRepository $roulement, UserRepository $user, ServiceRepository $serviceRepository, EntityManagerInterface $em): Response
     {
 
-        // dd($roulement->loadAll(new DateTime()));
 
+        dd($roulement->loadAll(new DateTime('2024-03-12')));
 
         return $this->render('debug/index.html.twig', [
             'controller_name' => 'DebugController',

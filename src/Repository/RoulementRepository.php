@@ -74,11 +74,33 @@ class RoulementRepository extends ServiceEntityRepository
 
         } else {
 
-            $this->roulements[$agent->getId()]->setAgent($agent);
-            $this->roulements[$agent->getId()]->setDate($date);
-            $this->roulements[$agent->getId()]->setService($serv);
-            $this->roulements[$agent->getId()]->setPriseDeService(DateTime::createFromFormat('H:i', $priseService));
-            $this->roulements[$agent->getId()]->setFinDeService(DateTime::createFromFormat('H:i', $finService));
+            $priseServiceFromImport = DateTime::createFromFormat('H:i', $priseService);
+            $serviceFromImport = $serv->getLabel();
+            $priseServiceFromBDD = $this->roulements[$agent->getId()]->getPriseDeService();
+
+            if($serviceFromImport == '809' || $serviceFromImport == '604') {
+                if($priseServiceFromImport != $priseServiceFromBDD) {
+
+                    $roulement = new Roulement();
+                    $roulement->setAgent($agent);
+                    $roulement->setDate($date);
+                    $roulement->setService($serv);
+                    $roulement->setPriseDeService(DateTime::createFromFormat('H:i', $priseService));
+                    $roulement->setFinDeService(DateTime::createFromFormat('H:i', $finService));
+
+                    if (!in_array($roulement, $this->roulements)) {
+                        $this->roulements[$agent->getId()] = $roulement;
+                    }
+                }
+
+            } else {
+
+                $this->roulements[$agent->getId()]->setAgent($agent);
+                $this->roulements[$agent->getId()]->setDate($date);
+                $this->roulements[$agent->getId()]->setService($serv);
+                $this->roulements[$agent->getId()]->setPriseDeService(DateTime::createFromFormat('H:i', $priseService));
+                $this->roulements[$agent->getId()]->setFinDeService(DateTime::createFromFormat('H:i', $finService));
+            }
 
         }
 

@@ -29,8 +29,8 @@
             <tr>
                 <td class="bg-purple-400">{{ roulement.service.label }}</td>
                 <td>{{ roulement.date ? roulement.date|date('d-m-Y') : '' }}</td>
-                <td class="{{ roulement.priseDeService|date('H:i:s') is same as '00:00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-400'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i:s') : '' }}</td>
-                <td class="{{ roulement.finDeService|date('H:i:s') is same as '00:00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-300'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i:s') : '' }}</td>
+                <td class="{{ roulement.priseDeService|date('H:i:s') is same as '00:00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-400'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</td>
+                <td class="{{ roulement.finDeService|date('H:i:s') is same as '00:00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-300'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</td>
             </tr>
         {% else %}
             <tr>
