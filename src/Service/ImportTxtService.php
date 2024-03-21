@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Import\CreateRoulement;
 use App\Import\ImportAT;
 use App\Import\ImportCRW;
+use App\Import\MergeTab;
 use App\Repository\CategorieRepository;
 use App\Repository\RoulementRepository;
 use App\Repository\ServiceRepository;
@@ -25,7 +26,7 @@ class ImportTxtService
     public function importTxt()
     {
         // ============ import fichier ABC =============
-        $importAT = new ImportAT(__DIR__.'/../../public/assets/txt/AT240312.TXT', "\t");
+        $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/AT240312.TXT', "\t");
         $importAT->import();
         $dataAT = $importAT->getData();
         $date = $importAT->getDate();
@@ -33,17 +34,23 @@ class ImportTxtService
         // dd($dataAT);
 
         // ============= import fichier CRW =============
-        $importCRW = new ImportCRW(__DIR__.'/../../public/assets/txt/16122023.CRW', ";");
+        $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/16122023.CRW', ";");
         $importCRW->import();
         $dataCRW = $importCRW->getData();
 
         // dd($dataCRW);
 
+        // ================== FUSION AT et CRW ===============
+
+        $mergeData = new MergeTab($dataAT, $dataCRW);
+        $dataFinal = $mergeData->merge();
+
+        // dd($dataFinal);
+
         // =========================== CREATION ROULEMENTS ========================
 
         $createRoulement = new CreateRoulement(
-            $dataAT,
-            $dataCRW,
+            $dataFinal,
             $date,
             $this->entityManager,
             $this->roulementRepository,

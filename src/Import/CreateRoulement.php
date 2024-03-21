@@ -10,8 +10,7 @@ use DateTime;
 
 class CreateRoulement
 {
-    private ?array $dataAT = [];
-    private ?array $dataCRW = [];
+    private ?array $data = [];
     private ?DateTime $date = null;
     private EntityManagerInterface $entityManager;
     private RoulementRepository $roulementRepository;
@@ -19,16 +18,14 @@ class CreateRoulement
     private UserRepository $userRepository;
 
     public function __construct(
-        array $dateAT,
-        array $dateCRW,
+        array $data,
         DateTime $date,
         EntityManagerInterface $entityManager,
         RoulementRepository $roulementRepository,
         ServiceRepository $serviceRepository,
         UserRepository $userRepository
     ) {
-        $this->dataAT = $dateAT;
-        $this->dataCRW = $dateCRW;
+        $this->data = $data;
         $this->date = $date;
         $this->entityManager = $entityManager;
         $this->roulementRepository = $roulementRepository;
@@ -38,47 +35,29 @@ class CreateRoulement
 
     public function createRoulement(): void
     {
-        foreach($this->dataAT as $at) {
+        foreach ($this->data as $dataItem) {
 
-            foreach($this->dataCRW as $crw) {
-
-                if($at['service'] == $crw['service']) {
-
-                    if($crw['lieuPriseService'] == 'DEPOT') {
-                        $priseService = $crw['heurePriseService'];
-                    }
-
-                    if($crw['lieuFinService'] == 'DEPOT') {
-                        $finService = $crw['heureFinService'];
-                    }
-
-                    $nomService = $at['service'];
-                    $matricule = $at['matricule'];
-                    $nomAgent = $at['nom'];
-
-                    $serv = $this->serviceRepository->findOrCreate($nomService);
-                    $agent = $this->userRepository->findOrCreate($matricule, $nomAgent);
+            $service = $this->serviceRepository->findOrCreate($dataItem['service']);
+            $agent = $this->userRepository->findOrCreate($dataItem['matricule'], $dataItem['agent']);
+            $priseService = $dataItem['priseService'];
+            $finService = $dataItem['finService'];
 
 
-                    if(isset($priseService) && isset($finService)) {
-                        $roulement = $this->roulementRepository->findOrCreate(
-                            $agent,
-                            $this->date,
-                            $serv,
-                            $priseService,
-                            $finService
-                        );
-                    }
+            $roulement = $this->roulementRepository->findOrCreate(
+                $agent,
+                $this->date,
+                $service, 
+                $priseService,
+                $finService
+            );
 
-
-                    if(isset($roulement)) {
-
-                        $this->entityManager->persist($roulement);
-                        $this->entityManager->flush();
-                    }
-
-                }
+            if (isset ($roulement)) {
+                $this->entityManager->persist($roulement);
+                $this->entityManager->flush();
             }
+
+
+
         }
     }
 }

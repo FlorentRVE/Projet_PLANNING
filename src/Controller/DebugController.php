@@ -18,11 +18,19 @@ use function Symfony\Component\DependencyInjection\Loader\Configurator\service;
 class DebugController extends AbstractController
 {
     #[Route('/debug', name: 'app_debug')]
-    public function index(RoulementRepository $roulement, UserRepository $user, ServiceRepository $serviceRepository, EntityManagerInterface $em): Response
-    {
+    public function index(
+        RoulementRepository $roulement,
+        UserRepository $user,
+        ServiceRepository $serviceRepository,
+        EntityManagerInterface $em
+    ): Response {
 
 
-        dd($roulement->loadAll(new DateTime('2024-03-12')));
+        dd(
+            $roulement->loadAll(
+                new DateTime('2024-03-12'),
+            )
+        );
 
         return $this->render('debug/index.html.twig', [
             'controller_name' => 'DebugController',

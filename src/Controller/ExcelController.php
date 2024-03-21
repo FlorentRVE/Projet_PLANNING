@@ -8,11 +8,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 class ExcelController extends AbstractController
-{    
+{
     public function __construct(
         private ImportTxtService $importTxt,
-        )
-    {
+    ) {
     }
 
     #[Route('/import', name: 'app_import_txt')]
@@ -22,5 +21,5 @@ class ExcelController extends AbstractController
 
         return new Response('|| Données importé avec succès ! ||');
     }
- 
+
 }

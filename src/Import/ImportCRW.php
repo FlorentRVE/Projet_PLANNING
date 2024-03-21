@@ -13,12 +13,14 @@ class ImportCRW extends Import
                 $rotation = $this->importPriseFinService($row);
 
                 if (!in_array($rotation, $this->data)) {
-                    $this->data[] = $rotation;
+                    $dataRow[] = $rotation;
                 }
 
             }
 
         }
+
+        $this->miseForme($dataRow);
     }
 
     private function importPriseFinService(array $row): array
@@ -33,5 +35,38 @@ class ImportCRW extends Import
 
         return $rotation;
 
+    }
+
+    private function miseForme(array $data): void
+    {
+        foreach ($data as $crw) {
+
+            $newRotation = [];
+            $newRotation['service'] = $crw['service'];
+
+            if ($crw['lieuPriseService'] == 'DEPOT') {
+                $newRotation['heurePriseService'] = $crw['heurePriseService'];
+            }
+
+            if ($crw['lieuFinService'] == 'DEPOT') {
+                $newRotation['heureFinService'] = $crw['heureFinService'];
+            }
+
+            if (isset ($newRotation['heurePriseService'])) {
+
+                if (intval($newRotation['heurePriseService']) < 11) {
+
+                    $newRotation['matinSoir'] = 1;
+                } else {
+
+                    $newRotation['matinSoir'] = 2;
+                }
+            }
+
+            if (isset ($newRotation['heurePriseService']) && isset ($newRotation['heureFinService']) && !in_array($newRotation, $this->data)) {
+                $this->data[$newRotation['service'] . '(' . $newRotation['matinSoir'] . ')'] = $newRotation;
+            }
+        }
+        
     }
 }
