@@ -81,9 +81,13 @@
             <tr class="">
                 <td class="text-lg text-center border-2 border-black bg-sky-400">{{ user.username }}<span class="text-red-700"> {{ user.categorie.label }}</span></td>
 
-                {% for roulement in user.roulements|slice(0, range) %}        
+                {% for roulement in user.roulements|slice(0, range) %}
                     <td class="bg-sky-300 text-xl text-center border-2 border-black p-0">
-                        <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
+                        {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
+                            <p class="bg-purple-400 text-2xl font-bold">{{ roulement.MatinSoir }}</p>
+                        {% else %}
+                            <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
+                        {% endif %}
                         <p class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-500 text-slate-50'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</p>
                         <p class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-400 text-slate-50'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</p>
                     </td>
