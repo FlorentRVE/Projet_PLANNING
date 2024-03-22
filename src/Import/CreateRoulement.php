@@ -33,28 +33,35 @@ class CreateRoulement
         $this->userRepository = $userRepository;
     }
 
-    public function createRoulement(): void
+    public function createRoulement()
     {
-        foreach ($this->data as $dataItem) {
+        foreach ($this->data as $key => $dataItem) {
 
+            $matinSoir = $key;
             $service = $this->serviceRepository->findOrCreate($dataItem['service']);
             $agent = $this->userRepository->findOrCreate($dataItem['matricule'], $dataItem['agent']);
             $priseService = $dataItem['priseService'];
             $finService = $dataItem['finService'];
 
+            $priseServiceFormate = DateTime::createFromFormat('H:i', $priseService);
+            $finServiceFormate = DateTime::createFromFormat('H:i', $finService);
+
 
             $roulement = $this->roulementRepository->findOrCreate(
+                $matinSoir,
                 $agent,
                 $this->date,
-                $service, 
-                $priseService,
-                $finService
+                $service,
+                $priseServiceFormate,
+                $finServiceFormate
             );
 
             if (isset ($roulement)) {
                 $this->entityManager->persist($roulement);
                 $this->entityManager->flush();
             }
+
+            // return $roulement;
 
 
 

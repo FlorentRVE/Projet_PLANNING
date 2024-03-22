@@ -7,6 +7,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: RoulementRepository::class)]
+#[ORM\Index(columns: ["matin_soir"])]
+
 class Roulement
 {
     #[ORM\Id]
@@ -30,6 +32,9 @@ class Roulement
     #[ORM\ManyToOne(inversedBy: 'roulements')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $agent = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $matin_soir = null;
 
     public function getId(): ?int
     {
@@ -92,6 +97,18 @@ class Roulement
     public function setAgent(?User $agent): static
     {
         $this->agent = $agent;
+
+        return $this;
+    }
+
+    public function getMatinSoir(): ?string
+    {
+        return $this->matin_soir;
+    }
+
+    public function setMatinSoir(string $matin_soir): static
+    {
+        $this->matin_soir = $matin_soir;
 
         return $this;
     }

@@ -26,39 +26,42 @@ class ImportTxtService
     public function importTxt()
     {
         // ============ import fichier ABC =============
-        $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/AT240312.TXT', "\t");
+        $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/AT240306.TXT', "\t");
         $importAT->import();
         $dataAT = $importAT->getData();
         $date = $importAT->getDate();
 
-        // dd($dataAT);
+        // ?dd($dataAT);
 
         // ============= import fichier CRW =============
         $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/16122023.CRW', ";");
         $importCRW->import();
         $dataCRW = $importCRW->getData();
 
-        // dd($dataCRW);
+        // ?dd($dataCRW);
 
         // ================== FUSION AT et CRW ===============
 
-        $mergeData = new MergeTab($dataAT, $dataCRW);
-        $dataFinal = $mergeData->merge();
+        $mergeATandCRW = new MergeTab($dataAT, $dataCRW);
+        $dataForRoulement = $mergeATandCRW->merge();
 
-        // dd($dataFinal);
+        // ?dd($dataFinal);
 
         // =========================== CREATION ROULEMENTS ========================
-
+        // $tabRoul = [];
+        
         $createRoulement = new CreateRoulement(
-            $dataFinal,
+            $dataForRoulement,
             $date,
             $this->entityManager,
             $this->roulementRepository,
             $this->serviceRepository,
             $this->userRepository
         );
-        // dd($createRoulement);
+
         $createRoulement->createRoulement();
+        // $tabRoul[] = $createRoulement->createRoulement();
+        // dd($tabRoul);
 
     }
 }

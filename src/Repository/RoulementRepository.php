@@ -51,38 +51,35 @@ class RoulementRepository extends ServiceEntityRepository
         ;
     }
 
-    /////////////////////////////////////////////////////////////////////////
-
-    public function findOrCreate(User $agent, DateTime $date, Service $serv, $priseService, $finService)
+    public function findOrCreate(string $matinSoir , User $agent, DateTime $date, Service $service, DateTime $priseService, DateTime $finService)
     {
         if ($this->roulements === null) {
             $this->roulements = $this->loadAll($date);
         }
 
-        // ! reprendre ici
-        if (!array_key_exists($agent->getId(), $this->roulements)) {
+        if (!array_key_exists($matinSoir, $this->roulements)) {
 
             $roulement = new Roulement();
+            $roulement->setMatinSoir($matinSoir);
             $roulement->setAgent($agent);
             $roulement->setDate($date);
-            $roulement->setService($serv);
-            $roulement->setPriseDeService(DateTime::createFromFormat('H:i', $priseService));
-            $roulement->setFinDeService(DateTime::createFromFormat('H:i', $finService));
-
-            $this->roulements[$agent->getId()] = $roulement;
-
+            $roulement->setService($service);
+            $roulement->setPriseDeService($priseService);
+            $roulement->setFinDeService($finService);
+            
+            $this->roulements[$matinSoir] = $roulement;
+            
         } else {    
-
-            $this->roulements[$agent->getId()]->setAgent($agent);
-            $this->roulements[$agent->getId()]->setDate($date);
-            $this->roulements[$agent->getId()]->setService($serv);
-            $this->roulements[$agent->getId()]->setPriseDeService(DateTime::createFromFormat('H:i', $priseService));
-            $this->roulements[$agent->getId()]->setFinDeService(DateTime::createFromFormat('H:i', $finService));
-
+            
+            $this->roulements[$matinSoir]->setAgent($agent);
+            $this->roulements[$matinSoir]->setDate($date);
+            $this->roulements[$matinSoir]->setService($service);
+            $this->roulements[$matinSoir]->setPriseDeService($priseService);
+            $this->roulements[$matinSoir]->setFinDeService($finService);
 
         }
 
-        return $this->roulements[$agent->getId()];
+        return $this->roulements[$matinSoir];
     }
 
     /**
@@ -91,7 +88,7 @@ class RoulementRepository extends ServiceEntityRepository
     public function loadAll(DateTime $date): array
     {
         return $this
-            ->createQueryBuilder('r', 'r.agent')
+            ->createQueryBuilder('r', 'r.matin_soir')
             ->andWhere('r.date = :date')
             ->setParameter('date', $date->format('Y-m-d'))
             ->getQuery()

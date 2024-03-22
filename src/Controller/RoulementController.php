@@ -24,15 +24,8 @@ class RoulementController extends AbstractController
         $categorie = $request->query->get('cat');
         $range = $request->query->get('range');
 
-        $data = $userRepository->findUserBySearch($searchTerm, $categorie);
-
-        // $data = $paginator->paginate(
-        //     $data,
-        //     $request->query->getInt('page', 1),
-        //     10
-        // );
-
         $ferie = $ferieRepository->findAll();
+        $data = $userRepository->findUserBySearch($searchTerm, $categorie);
 
         return $this->render('roulement/index.html.twig', [
             'users' => $data,
