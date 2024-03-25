@@ -43,13 +43,10 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     }
 
 
-    public function findUserBySearch($value, $categorie): array
+    public function findUserBySearch($value): array
     {
         return $this->createQueryBuilder('u')
-             ->innerJoin('u.categorie', 'c')
-             ->andWhere('c.label LIKE :valueCat')
              ->andWhere('u.username LIKE :value OR :value = \'\'')
-             ->setParameter('valueCat', '%'.$categorie.'%')
              ->setParameter('value', '%'.$value.'%')
              ->orderBy('u.username', 'ASC')
              ->getQuery()

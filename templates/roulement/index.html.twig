@@ -4,27 +4,21 @@
 
 {% block body %}
 
-<div class="flex flex-col justify-center items-center p-6">
+<div class="flex flex-col justify-center items-center p-6 bg-sky-100">
 
-    <div class="flex flex-col justify-between items-center p-2 w-full bg-sky-200 rounded-xl mb-8">
-        <h1 class="text-xl font-bold text-center p-4 text-slate-900">ADMIN</h1>
-    
+    <div class="flex flex-col justify-between items-center p-2 w-full bg-sky-200 rounded-xl mb-8">    
         <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
             <div class="flex gap-2">
-                <a href="{{ path('app_roulement_index', {'cat': "", 'range': '7'}) }}"><button class="btn bg-sky-600 hover:bg-sky-300 border-0">RESET</button></a>        
-                <a href="{{ path('app_roulement_index', {'cat': "ROULEMENT", 'range': app.request.query.get('range')}) }}"><button class="btn bg-sky-400 hover:bg-sky-300 border-0">ROULEMENT</button></a>
-                <a href="{{ path('app_roulement_index', {'cat': "CONTROL", 'range': app.request.query.get('range')}) }}"><button class="btn bg-sky-400 hover:bg-sky-300 border-0">CONTROLLEUR</button></a>        
+                <a href="{{ path('app_roulement_index')}}"><button class="btn bg-sky-600 hover:bg-sky-300 border-0">RESET</button></a>        
                 <a href="{{ path('app_roulement_user') }}"><button class="btn bg-sky-400 hover:bg-sky-300 border-0">EXEMPLE VUE PERSO</button></a>        
             </div>
 
-            
-            <form action="#" method="get" class="w-2/6 flex gap-2">
-                <input type="number" id="range" name="range" value="{{ range }}" min="1" max="14" class="w-[50px] text-center font-bold rounded-lg" />
+            {# <form action="#" method="get" class="w-2/6 flex gap-2">
+                <input type="number" id="range" name="range" value="{{ range }}" min="1" max="14" class="w-[50px] text-center font-bold rounded-lg"/>
                 <button class="btn bg-sky-400 hover:bg-sky-300 border-0">Nombres de jour à afficher</button>
-            </form>
+            </form> #}
 
             <a href="{{ path('app_user_index') }}"><p class="text-4xl">👤</p></a>
-            {# <div class="text-blue-700 font-bold text-xl">{{ knp_pagination_render(users) }}</div> #}
         </div>
     </div>
     <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
@@ -35,7 +29,7 @@
 
             <ul>
                 {% for day in ferie %}
-                    {% if day.date|date('m') == "may"|date('m') %}
+                    {% if day.date|date('m') == "now"|date('m') %}
                         <li>{{ day.label }}</li>
                     {% endif %}
                 {% endfor %}
@@ -49,15 +43,12 @@
             </label>
         </form>
     </div>
-    
-
-
 
     {# ==================== TABLEAU ===================== #}
 
     <table class="table">
         <thead>
-            {# <tr>
+            <tr>
                 <th class=""></th>
                 <th class="text-center text-xl font-bold">Lun</th>
                 <th class="text-center text-xl font-bold">Mar</th>
@@ -66,11 +57,11 @@
                 <th class="text-center text-xl font-bold">Ven</th>
                 <th class="text-center text-xl font-bold">Sam</th>
                 <th class="text-center text-xl font-bold">Dim</th>
-            </tr> #}
+            </tr>
             <tr class="text-xl text-center">
                 <th></th>          
             {% for user in users|slice(0, 1) %}
-                {% for roulement in user.roulements|slice(0, range) %}        
+                {% for roulement in user.roulements %}        
                     <th class="border-2 border-black bg-sky-400">{{ roulement.date ? roulement.date|date('d-m-Y') : '' }}</th>
                 {% endfor %}
             {% endfor %}
@@ -79,19 +70,24 @@
         {% for user in users %}
         <tbody>
             <tr class="">
-                <td class="text-lg text-center border-2 border-black bg-sky-400">{{ user.username }}<span class="text-red-700"> {{ user.categorie.label }}</span></td>
+                <td class="text-lg text-center border-1 border-black bg-sky-400 w-1/3">{{ user.username }}</td>
+                {% if user.roulements is not empty %}
+                    {% for roulement in user.roulements %}
 
-                {% for roulement in user.roulements|slice(0, range) %}
-                    <td class="bg-sky-300 text-xl text-center border-2 border-black p-0">
-                        {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
-                            <p class="bg-purple-400 text-2xl font-bold">{{ roulement.MatinSoir }}</p>
-                        {% else %}
-                            <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
-                        {% endif %}
-                        <p class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-500 text-slate-50'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</p>
-                        <p class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-400 text-slate-50'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</p>
-                    </td>
-                {% endfor %}
+                        <td class="bg-sky-300 text-xl text-center border-2 border-black p-0 flex flex-col">
+                            {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
+                                <p class="bg-purple-400 text-2xl font-bold">{{ roulement.MatinSoir }}</p>
+                            {% else %}
+                                <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
+                            {% endif %}
+                            <p class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-500 text-slate-50'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</p>
+                            <p class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-400 text-slate-50'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</p>
+                        </td>                    
+
+                    {% endfor %}
+                {% else %}
+                    <td class="bg-blue-200 text-2xl font-bold border-1 border-black"></td>
+                {% endif %}   
             </tr>
             {% else %}
                 <tr>

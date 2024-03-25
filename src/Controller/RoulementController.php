@@ -21,17 +21,16 @@ class RoulementController extends AbstractController
     public function index(Request $request, UserRepository $userRepository, FerieRepository $ferieRepository, PaginatorInterface $paginator): Response
     {
         $searchTerm = $request->query->get('search');
-        $categorie = $request->query->get('cat');
-        $range = $request->query->get('range');
+        // $range = intval($request->query->get('range')) ? null : 1;
 
         $ferie = $ferieRepository->findAll();
-        $data = $userRepository->findUserBySearch($searchTerm, $categorie);
+        $data = $userRepository->findUserBySearch($searchTerm);
 
         return $this->render('roulement/index.html.twig', [
             'users' => $data,
             'searchTerm' => $searchTerm,
             'ferie' => $ferie,
-            'range' => $range,
+            // 'range' => $range,
         ]);
     }
 
@@ -39,61 +38,12 @@ class RoulementController extends AbstractController
     public function userDisplay(RoulementRepository $roulementRepository, Request $request): Response
     {
         $searchTerm = $request->query->get('tri');
-        $user = 'SAMY-ARLAYE  RITCHIE JEAN';
+        $user = 'SAMY-ARLAYE  RITCHIE JEAN'; // ! A remplacer par utilisateur connecté
 
         $roulement = $roulementRepository->findByTriAndUser($searchTerm, $user);
 
         return $this->render('roulement/user.html.twig', [
             'roulements' => $roulement,
         ]);
-    }
-
-    #[Route('/new', name: 'app_roulement_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $roulement = new Roulement();
-        $form = $this->createForm(RoulementType::class, $roulement);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($roulement);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_roulement_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('roulement/new.html.twig', [
-            'roulement' => $roulement,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'app_roulement_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Roulement $roulement, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(RoulementType::class, $roulement);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_roulement_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('roulement/edit.html.twig', [
-            'roulement' => $roulement,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_roulement_delete', methods: ['POST'])]
-    public function delete(Request $request, Roulement $roulement, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$roulement->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($roulement);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_roulement_index', [], Response::HTTP_SEE_OTHER);
     }
 }
