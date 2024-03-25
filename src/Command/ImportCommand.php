@@ -33,7 +33,7 @@ class ImportCommand extends Command
         $io = new SymfonyStyle($input, $output);
 
         $this->importService->createRoulementFromImport();
-        $io->success('Les données ont été mis à jour dans la base de données !');
+        $io->success('La base de données a été mis à jour !');
 
         return Command::SUCCESS;
     }

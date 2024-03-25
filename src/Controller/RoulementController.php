@@ -2,12 +2,9 @@
 
 namespace App\Controller;
 
-use App\Entity\Roulement;
-use App\Form\RoulementType;
 use App\Repository\FerieRepository;
 use App\Repository\RoulementRepository;
 use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,7 +18,6 @@ class RoulementController extends AbstractController
     public function index(Request $request, UserRepository $userRepository, FerieRepository $ferieRepository, PaginatorInterface $paginator): Response
     {
         $searchTerm = $request->query->get('search');
-        // $range = intval($request->query->get('range')) ? null : 1;
 
         $ferie = $ferieRepository->findAll();
         $data = $userRepository->findUserBySearch($searchTerm);
@@ -30,7 +26,6 @@ class RoulementController extends AbstractController
             'users' => $data,
             'searchTerm' => $searchTerm,
             'ferie' => $ferie,
-            // 'range' => $range,
         ]);
     }
 
