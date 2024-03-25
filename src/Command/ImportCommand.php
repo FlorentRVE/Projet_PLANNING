@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\ImportTxtService;
+use App\Service\ImportService;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,14 +11,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
     name: 'app:import',
-    description: 'Importe les données depuis les fichiers ABC et CRW',
+    description: 'Création des roulements à partir des données des fichiers ABC et CRW',
 )]
 class ImportCommand extends Command
 {
     public function __construct(
-        private ImportTxtService $importTxt,
-    )
-    {
+        private ImportService $importService,
+    ) {
         parent::__construct();
     }
 
@@ -32,9 +31,9 @@ class ImportCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        
-        $this->importTxt->importTxt();
-        $io->success('Les données ont été importées dans la base de données !');
+
+        $this->importService->createRoulementFromImport();
+        $io->success('Les données ont été mis à jour dans la base de données !');
 
         return Command::SUCCESS;
     }

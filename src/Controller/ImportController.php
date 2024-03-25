@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Service\ImportTxtService;
+use App\Service\ImportService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -10,16 +10,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class ImportController extends AbstractController
 {
     public function __construct(
-        private ImportTxtService $importTxt,
+        private ImportService $importService,
     ) {
     }
 
     #[Route('/import', name: 'app_import_txt')]
-    public function importTxt(): Response
+    public function importData(): Response
     {
-        $this->importTxt->importTxt();
+        $this->importService->createRoulementFromImport();
 
-        return new Response('|| Données importé avec succès ! ||');
+        return new Response('Données mis à jour avec succès ✅');
     }
 
 }

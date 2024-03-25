@@ -2,8 +2,7 @@
 
 namespace App\Import;
 
-
-class MergeTab
+class MergeATandCRW
 {
     private ?array $dataAT = [];
     private ?array $dataCRW = [];
