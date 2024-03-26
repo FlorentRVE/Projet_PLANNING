@@ -10,6 +10,7 @@ use App\Repository\CategorieRepository;
 use App\Repository\RoulementRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
+use DirectoryIterator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ImportService
@@ -25,40 +26,58 @@ class ImportService
 
     public function createRoulementFromImport()
     {
-        // ============ import fichier ABC =============
-        $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/AT240306.TXT', "\t");
-        $importAT->import();
-        $dataAT = $importAT->getData();
-        $date = $importAT->getDate();
 
-        // !dd($dataAT);
+        // $fileName = array();
 
-        // ============= import fichier CRW =============
-        $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/16122023.CRW', ";");
-        $importCRW->import();
-        $dataCRW = $importCRW->getData();
+        // $dir = scandir(__DIR__ . '\..\..\public\assets\txt\\');
+        // foreach ($dir as $fileinfo) {
+        //     if(str_contains($fileinfo, 'AT'))
+        //     array_push($fileName, $fileinfo);
+        // }
 
-        // !dd($dataCRW);
+        // foreach ($fileName as $file) {
 
-        // ================== FUSION AT et CRW ===============
+            // ============ import fichier ABC =============
+            // $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/' . $file, "\t");
+            // $importAT->import();
+            // $dataAT = $importAT->getData();
+            // $date = $importAT->getDate();
+   
 
-        $mergeATandCRW = new MergeATandCRW($dataAT, $dataCRW);
-        $dataForRoulement = $mergeATandCRW->merge();
+            $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/AT240312.TXT', "\t");
+            $importAT->import();
+            $dataAT = $importAT->getData();
+            $date = $importAT->getDate();
 
-        // !dd($dataFinal);
+            // !dd($dataAT);
 
-        // =========================== CREATION ROULEMENTS ========================
-        
-        $createRoulement = new CreateRoulement(
-            $dataForRoulement,
-            $date,
-            $this->entityManager,
-            $this->roulementRepository,
-            $this->serviceRepository,
-            $this->userRepository
-        );
+            // ============= import fichier CRW =============
+            $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/16122023.CRW', ";");
+            $importCRW->import();
+            $dataCRW = $importCRW->getData();
 
-        $createRoulement->createRoulement();
+            // !dd($dataCRW);
+
+            // ================== FUSION AT et CRW ===============
+
+            $mergeATandCRW = new MergeATandCRW($dataAT, $dataCRW);
+            $dataForRoulement = $mergeATandCRW->merge();
+
+            // !dd($dataForRoulement);
+
+            // =========================== CREATION ROULEMENTS ========================
+
+            $createRoulement = new CreateRoulement(
+                $dataForRoulement,
+                $date,
+                $this->entityManager,
+                $this->roulementRepository,
+                $this->serviceRepository,
+                $this->userRepository
+            );
+
+            $createRoulement->createRoulement();
+        }
 
     }
-}
+// }
