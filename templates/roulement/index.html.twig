@@ -41,7 +41,16 @@
         </form>
     </div>
 
-    {# ==================== TABLEAU ===================== #}
+{# ==================== TABLEAU ===================== #}
+    {% set date = [] %}  
+
+    {% for user in users %}
+        {% for roulement in user.roulements %}
+            {% if roulement.date|date('d-m-Y') not in date %}
+                {% set date = date|merge([roulement.date|date('d-m-Y')]) %}
+            {% endif %}        
+        {% endfor %}
+    {% endfor %}
 
     <table class="table">
         <thead>
@@ -56,35 +65,34 @@
                 <th class="text-center text-xl font-bold">Dim</th>
             </tr>
             <tr class="text-xl text-center">
-                <th></th>          
-            {% for user in users|slice(0, 1) %}
-                {% for roulement in user.roulements %}        
-                    <th class="border-2 border-black bg-sky-400">{{ roulement.date ? roulement.date|date('d-m-Y') : 'Pas de date' }}</th>
+                <th></th>
+                {% for day in date|slice(0, 7) %}
+                    <th class="bg-sky-400 border-2 border-black">{{ day }}</th>
                 {% endfor %}
-            {% endfor %}
             </tr>
         </thead>
         {% for user in users %}
-        <tbody>
-            <tr class="">
-                <td class="text-lg text-center border-1 border-black bg-sky-400 w-1/3">{{ user.username }}</td>
-                {% if user.roulements is not empty %}
+        <tbody class="border-2 border-black">
+            <tr>
+                <td class="text-lg text-center bg-sky-400 w-1/3">{{ user.username }}</td>
+                {% for day in date %}
+                <td class="border-2 border-black p-0">
                     {% for roulement in user.roulements %}
-
-                        <td class="bg-sky-300 text-xl text-center border-2 border-black p-0">
-                            {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
-                                <p class="bg-purple-400 text-2xl font-bold">{{ roulement.MatinSoir }}</p>
-                            {% else %}
-                                <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
-                            {% endif %}
-                            <p class="{{ roulement.priseDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-green-500 text-slate-50'}}">{{ roulement.priseDeService ? roulement.priseDeService|date('H:i') : '' }}</p>
-                            <p class="{{ roulement.finDeService|date('H:i') is same as '00:00' ? 'text-gray-400 bg-gray-400' : 'bg-orange-400 text-slate-50'}}">{{ roulement.finDeService ? roulement.finDeService|date('H:i') : '' }}</p>
-                        </td>                    
-
+                        {% if roulement.date|date('d-m-Y') == day %}
+                            <div class="bg-sky-300 text-xl text-center">
+                                {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
+                                    <p class="bg-purple-400 text-2xl font-bold border-t-2 border-black">{{ roulement.MatinSoir }}</p>
+                                {% else %}
+                                    <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
+                                {% endif %}
+                                <p class="bg-green-500 text-slate-50">{{ roulement.priseDeService|date('H:i')}}</p>
+                                <p class="bg-orange-400 text-slate-50">{{ roulement.finDeService|date('H:i')}}</p>
+                            </div>
+                        {% endif %}
                     {% endfor %}
-                {% else %}
-                    <td class="bg-blue-200 text-2xl font-bold border-1 border-black"></td>
-                {% endif %}   
+                </td>  
+                {% endfor %}  
+
             </tr>
             {% else %}
                 <tr>

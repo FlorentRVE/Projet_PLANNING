@@ -39,6 +39,7 @@ class RoulementController extends AbstractController
 
         return $this->render('roulement/user.html.twig', [
             'roulements' => $roulement,
+            'user' => $user,
         ]);
     }
 }
