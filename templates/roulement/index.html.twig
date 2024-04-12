@@ -27,7 +27,7 @@
             <ul>
                 {% for day in ferie %}
                     {% if day.date|date('m') == "now"|date('m') %}
-                        <li>{{ day.label }}</li>
+                        <li>{{ day.label }} ( {{ day.date|date('d/m') }} )</li>
                     {% endif %}
                 {% endfor %}
             </ul>
@@ -41,33 +41,39 @@
         </form>
     </div>
 
-{# ==================== TABLEAU ===================== #}
-    {% set date = [] %}  
-
+    {# ============== FORMAT ET TRI DATES ============== #}
+    {% set dates = [] %}  
+    {% set datesFormatted = [] %}  
+    {% set dayTraduction = {'Monday': 'Lundi', 'Tuesday': 'Mardi', 'Wednesday': 'Mercredi', 'Thursday': 'Jeudi', 'Friday': 'Vendredi', 'Saturday': 'Samedi', 'Sunday': 'Dimanche'} %}
+   
     {% for user in users %}
         {% for roulement in user.roulements %}
-            {% if roulement.date|date('d-m-Y') not in date %}
-                {% set date = date|merge([roulement.date|date('d-m-Y')]) %}
+            {% if roulement.date|date('d-m-Y') not in dates %}
+                {% set dates = dates|merge([roulement.date|date('d-m-Y')]) %}
             {% endif %}        
         {% endfor %}
     {% endfor %}
+    
+    {# ! {{dump(dates)}} #}
 
+    {% for day in dates %}
+        {% set datesFormatted = datesFormatted|merge([date(day)]) %}
+    {% endfor %}
+
+    {% set dateSorted = datesFormatted|sort %}
+
+    {# ================= TABLE ================== #}
     <table class="table">
         <thead>
-            <tr>
-                <th class=""></th>
-                <th class="text-center text-xl font-bold">Lun</th>
-                <th class="text-center text-xl font-bold">Mar</th>
-                <th class="text-center text-xl font-bold">Mer</th>
-                <th class="text-center text-xl font-bold">Jeu</th>
-                <th class="text-center text-xl font-bold">Ven</th>
-                <th class="text-center text-xl font-bold">Sam</th>
-                <th class="text-center text-xl font-bold">Dim</th>
-            </tr>
             <tr class="text-xl text-center">
                 <th></th>
-                {% for day in date|slice(0, 7) %}
-                    <th class="bg-sky-400 border-2 border-black">{{ day }}</th>
+                {% for day in dateSorted|slice(-7) %}
+                    <th class="bg-sky-400 border-2 border-black">
+                        <div>
+                            <p>{{ dayTraduction[day|date('l')] }}</p>
+                            <p>{{ day|date('d/m') }}</p>
+                        </div>
+                    </th>
                 {% endfor %}
             </tr>
         </thead>
@@ -75,10 +81,10 @@
         <tbody class="border-2 border-black">
             <tr>
                 <td class="text-lg text-center bg-sky-400 w-1/3">{{ user.username }}</td>
-                {% for day in date %}
+                {% for day in dateSorted|slice(-7) %}
                 <td class="border-2 border-black p-0">
                     {% for roulement in user.roulements %}
-                        {% if roulement.date|date('d-m-Y') == day %}
+                        {% if roulement.date == day %}
                             <div class="bg-sky-300 text-xl text-center">
                                 {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
                                     <p class="bg-purple-400 text-2xl font-bold border-t-2 border-black">{{ roulement.MatinSoir }}</p>

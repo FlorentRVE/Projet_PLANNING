@@ -19,7 +19,7 @@ class ImportController extends AbstractController
     {
         $this->importService->createRoulementFromImport();
 
-        return new Response('Données mis à jour avec succès ✅');
+        return new Response('<h1>Données mis à jour avec succès ✅<h1>');
     }
 
 }

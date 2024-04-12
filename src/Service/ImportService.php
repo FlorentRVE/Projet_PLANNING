@@ -27,57 +27,56 @@ class ImportService
     public function createRoulementFromImport()
     {
 
-        // $fileName = array();
+        $arrayOfFilename = array();
 
-        // $dir = scandir(__DIR__ . '\..\..\public\assets\txt\\');
-        // foreach ($dir as $fileinfo) {
-        //     if(str_contains($fileinfo, 'AT'))
-        //     array_push($fileName, $fileinfo);
-        // }
+        $filesInFolder = scandir(__DIR__ . '\..\..\public\assets\txt\\');
+        foreach ($filesInFolder as $fileName) {
+            if (str_contains($fileName, 'AT'))
+                array_push($arrayOfFilename, $fileName);
+        }
 
-        // foreach ($fileName as $file) {
+        foreach ($arrayOfFilename as $fileName) {
 
             // ============ import fichier ABC =============
-            // $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/' . $file, "\t");
-            // $importAT->import();
-            // $dataAT = $importAT->getData();
-            // $date = $importAT->getDate();
-   
-
-            $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/AT240312.TXT', "\t");
+            $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/' . $fileName, "\t");
             $importAT->import();
             $dataAT = $importAT->getData();
             $date = $importAT->getDate();
 
-            // !dd($dataAT);
+            $dateToday = new \DateTime();
+            
+            if ($date == $dateToday || $date > $dateToday) {
 
-            // ============= import fichier CRW =============
-            $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/16122023.CRW', ";");
-            $importCRW->import();
-            $dataCRW = $importCRW->getData();
+                // !dd($dataAT);
 
-            // !dd($dataCRW);
+                // ============= import fichier CRW =============
+                $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/16122023.CRW', ";");
+                $importCRW->import();
+                $dataCRW = $importCRW->getData();
 
-            // ================== FUSION AT et CRW ===============
+                // !dd($dataCRW);
 
-            $mergeATandCRW = new MergeATandCRW($dataAT, $dataCRW);
-            $dataForRoulement = $mergeATandCRW->merge();
+                // ================== FUSION AT et CRW ===============
 
-            // !dd($dataForRoulement);
+                $mergeATandCRW = new MergeATandCRW($dataAT, $dataCRW);
+                $dataForRoulement = $mergeATandCRW->merge();
 
-            // =========================== CREATION ROULEMENTS ========================
+                // !dd($dataForRoulement);
 
-            $createRoulement = new CreateRoulement(
-                $dataForRoulement,
-                $date,
-                $this->entityManager,
-                $this->roulementRepository,
-                $this->serviceRepository,
-                $this->userRepository
-            );
+                // =========================== CREATION ROULEMENTS ========================
 
-            $createRoulement->createRoulement();
+                $createRoulement = new CreateRoulement(
+                    $dataForRoulement,
+                    $date,
+                    $this->entityManager,
+                    $this->roulementRepository,
+                    $this->serviceRepository,
+                    $this->userRepository
+                );
+
+                $createRoulement->createRoulement();
+            }
         }
 
     }
-// }
+}

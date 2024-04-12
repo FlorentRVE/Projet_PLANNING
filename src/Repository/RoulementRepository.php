@@ -53,9 +53,7 @@ class RoulementRepository extends ServiceEntityRepository
 
     public function findOrCreate(string $matinSoir , User $agent, DateTime $date, Service $service, DateTime $priseService, DateTime $finService)
     {
-        if ($this->roulements === null) {
-            $this->roulements = $this->loadAll($date);
-        }
+        $this->roulements = $this->loadAll($date);        
 
         if (!array_key_exists($matinSoir, $this->roulements)) {
 

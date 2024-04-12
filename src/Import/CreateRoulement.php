@@ -56,11 +56,12 @@ class CreateRoulement
                 $finServiceFormate
             );
 
+            
             if (isset ($roulement)) {
                 $this->entityManager->persist($roulement);
                 $this->entityManager->flush();
             }
-
+            
         }
     }
 }
