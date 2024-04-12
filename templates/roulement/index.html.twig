@@ -4,7 +4,7 @@
 
 {% block body %}
 
-<div class="flex flex-col justify-center items-center p-6 bg-sky-100">
+<div class="flex flex-col justify-center items-center p-6">
 
     <div class="flex flex-col justify-between items-center p-2 w-full bg-sky-200 rounded-xl mb-8">    
         <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
@@ -20,9 +20,9 @@
     <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
 
         {# =============== Jour férié ============== #}
-        <div class="flex flex-col gap-2 bg-red-200 p-4 rounded-xl">
+        <div class="flex flex-col gap-2 bg-orange-200 p-4 rounded-xl">
 
-            <p class="font-bold undeline text-red-600 text-lg text-center mb-2 pb-2 border-b-2 border-b-red-600">Jour fériés du mois</p>
+            <p class="font-bold undeline text-orange-600 text-lg text-center mb-2 pb-2 border-b-2 border-b-orange-600">Jour fériés du mois</p>
 
             <ul>
                 {% for day in ferie %}
@@ -65,10 +65,10 @@
     {# ================= TABLE ================== #}
     <table class="table">
         <thead>
-            <tr class="text-xl text-center">
+            <tr class="text-center">
                 <th></th>
                 {% for day in dateSorted|slice(-7) %}
-                    <th class="bg-sky-400 border-2 border-black">
+                    <th class="uppercase font-bold text-slate-950">
                         <div>
                             <p>{{ dayTraduction[day|date('l')] }}</p>
                             <p>{{ day|date('d/m') }}</p>
@@ -78,21 +78,21 @@
             </tr>
         </thead>
         {% for user in users %}
-        <tbody class="border-2 border-black">
-            <tr>
-                <td class="text-lg text-center bg-sky-400 w-1/3">{{ user.username }}</td>
+        <tbody class="">
+            <tr class="border-y-2">
+                <td class="w-1/3 font-bold text-slate-950">{{ user.username }}</td>
                 {% for day in dateSorted|slice(-7) %}
-                <td class="border-2 border-black p-0">
+                <td class="">
                     {% for roulement in user.roulements %}
                         {% if roulement.date == day %}
-                            <div class="bg-sky-300 text-xl text-center">
+                            <div class="text-center">
                                 {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
-                                    <p class="bg-purple-400 text-2xl font-bold border-t-2 border-black">{{ roulement.MatinSoir }}</p>
+                                    <p class="bg-sky-300 font-bold">{{ roulement.MatinSoir }}</p>
                                 {% else %}
-                                    <p class="bg-purple-400 text-2xl font-bold">{{ roulement.service.label }}</p>
+                                    <p class="bg-sky-300 font-bold">{{ roulement.service.label }}</p>
                                 {% endif %}
-                                <p class="bg-green-500 text-slate-50">{{ roulement.priseDeService|date('H:i')}}</p>
-                                <p class="bg-orange-400 text-slate-50">{{ roulement.finDeService|date('H:i')}}</p>
+                                <p class="bg-sky-200">{{ roulement.priseDeService|date('H:i')}}</p>
+                                <p class="bg-sky-200">{{ roulement.finDeService|date('H:i')}}</p>
                             </div>
                         {% endif %}
                     {% endfor %}
@@ -102,7 +102,7 @@
             </tr>
             {% else %}
                 <tr>
-                    <td colspan="6" class="bg-sky-300 text-xl text-red-500">Aucun roulement correspondant</td>
+                    <td colspan="6">Aucun roulement correspondant</td>
                 </tr>
             {% endfor %}
         </tbody>
