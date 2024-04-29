@@ -57,12 +57,12 @@
 
                 <div class="pt-3 w-full">
                     <div class="bg-gradient-to-r from-blue-900 to-gray-800 p-4 shadow text-2xl text-white">
-                        <h1 class="font-bold p-2">Utilisateurs</h1>
+                        <h1 class="font-bold p-2">Liste d'utilisateurs</h1>
                     </div>
                 </div>
 
 
-                <div class="bg-sky-300 w-full py-6 px-3">
+                <div class="bg-gray-100 w-full py-6 px-3">
 
                     <div class="flex flex-col justify-center items-center w-full">
                         <div class="text-slate-950 font-bold text-xl mb-5">{{ knp_pagination_render(users) }}</div>
@@ -71,10 +71,10 @@
                     <table class="w-[90%] mx-auto my-0">
                         <tbody>
                         {% for user in users %}
-                            <tr class="border-2 border-slate-900">
-                                <td class="border-2 border-slate-900 w-[65%] bg-slate-50 text-center font-semibold">{{ user.username }}</td>
+                            <tr class="border-2 border-slate-950">
+                                <td class="w-[65%] bg-sky-100 text-center font-semibold">{{ user.username }}</td>
 
-                                <td class="border-2 border-slate-900 bg-slate-950 flex flex-col items-center">
+                                <td class="bg-gray-800 flex flex-col items-center p-2">
 
                                     <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="bg-yellow-400 text-center px-3  hover:brightness-125 rounded-lg font-semibold">Modifier</a>
                                     <a href="{{ path('app_userPassword_edit', {'id': user.id}) }}" class="text-slate-100 text-center px-3  hover:brightness-125 hover:text-orange-400 rounded-lg font-semibold">Changer mot de passe</a>
@@ -85,7 +85,7 @@
                                 </td>
                             </tr>
                         {% else %}
-                            <tr class="border-2 border-slate-900 bg-slate-50 text-2xl text-center">
+                            <tr class="bg-slate-50 text-2xl text-center">
                                 <td colspan="3">Aucun utilisateur ne correspond à votre recherche ...</td>
                             </tr>
                         {% endfor %}

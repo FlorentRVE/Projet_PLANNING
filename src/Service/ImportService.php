@@ -10,7 +10,6 @@ use App\Repository\CategorieRepository;
 use App\Repository\RoulementRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\UserRepository;
-use DirectoryIterator;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ImportService

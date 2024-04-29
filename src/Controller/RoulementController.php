@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Repository\FerieRepository;
 use App\Repository\RoulementRepository;
 use App\Repository\UserRepository;
-use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,7 +14,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class RoulementController extends AbstractController
 {
     #[Route('/', name: 'app_roulement_index', methods: ['GET'])]
-    public function index(Request $request, UserRepository $userRepository, FerieRepository $ferieRepository, PaginatorInterface $paginator): Response
+    public function index(Request $request, UserRepository $userRepository, FerieRepository $ferieRepository): Response
     {
         $searchTerm = $request->query->get('search');
 
@@ -32,10 +31,9 @@ class RoulementController extends AbstractController
     #[Route('/indiv', name: 'app_roulement_user', methods: ['GET'])]
     public function userDisplay(RoulementRepository $roulementRepository, Request $request): Response
     {
-        $searchTerm = $request->query->get('tri');
         $user = 'SAMY-ARLAYE  RITCHIE JEAN'; // ! A remplacer par utilisateur connecté
 
-        $roulement = $roulementRepository->findByTriAndUser($searchTerm, $user);
+        $roulement = $roulementRepository->findByUser($user);
 
         return $this->render('roulement/user.html.twig', [
             'roulements' => $roulement,

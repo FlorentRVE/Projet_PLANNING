@@ -26,26 +26,14 @@ class RoulementRepository extends ServiceEntityRepository
         parent::__construct($registry, Roulement::class);
     }
 
-
-    public function findByTri($value)
-    {
-        return $this->createQueryBuilder('r')
-            ->select('a, r')
-            ->innerJoin('r.agent', 'a')
-            ->orderBy('a.username', $value)
-            ->setMaxResults(20)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    public function findByTriAndUser($value, $user)
+    public function findByUser($user)
     {
         return $this->createQueryBuilder('r')
             ->select('a, r')
             ->innerJoin('r.agent', 'a')
             ->andWhere('a.username = :u')
             ->setParameter('u', $user)
-            ->orderBy('r.date', $value)
+            ->orderBy('r.date', 'DESC')
             ->getQuery()
             ->getResult()
         ;
