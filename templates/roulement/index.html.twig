@@ -6,16 +6,23 @@
 
 <div class="flex flex-col justify-center items-center p-6">
 
-    <div class="flex flex-col justify-between items-center p-2 w-full mb-8">    
-        <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
-            <div class="flex gap-2">
-                <a href="{{ path('app_roulement_index')}}"><button class="btn border-0">RESET</button></a>        
-                <a href="{{ path('app_roulement_user') }}"><button class="btn border-0">EXEMPLE VUE PERSO</button></a>        
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="flex flex-col justify-between items-center p-2 w-full">    
+            <div class="flex justify-between items-center p-2 gap-4 w-full">
+                <div></div>
+                <a href="{{ path('app_user_index') }}"><i class="fa-solid fa-gears text-3xl"></i></a>
             </div>
-
-            <a href="{{ path('app_user_index') }}"><p class="text-4xl">👤</p></a>
         </div>
-    </div>
+    {% endif %}
+
+    {% if is_granted('ROLE_PLANNING') %}
+        <div class="flex flex-col justify-between items-center p-2 w-full">    
+            <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
+                <div></div>
+                <a href="{{ path('app_logout') }}" class="text-xl"><i class="fa-solid fa-arrow-right-from-bracket"></i></a>
+            </div>
+        </div>
+    {% endif %}
 
     <div class="flex justify-between items-center p-2 gap-4 w-full mb-6">
 
@@ -24,10 +31,18 @@
 
             <p class="font-bold undeline text-orange-600 text-lg text-center mb-2 pb-2 border-b-2 border-b-orange-600">Jours fériés du mois</p>
 
-            <ul>
+            {# <ul>
                 {% for day in ferie %}
                     {% if day.date|date('m') == "now"|date('m') %}
-                        <li>{{ day.label }} ({{ day.date|date('d/m') }})</li>
+                        <li class="font-bold">{{ day.label }} ({{ day.date|date('d/m') }})</li>
+                    {% endif %}
+                {% endfor %}
+            </ul> #}
+            <ul>
+            {# {{ dump(ferie) }} #}
+                {% for day in ferie %}
+                    {% if day.date|date('m') == "may"|date('m') %}
+                        <li class="font-bold">{{ day.service.label }} ({{ day.date|date('d/m') }})</li>
                     {% endif %}
                 {% endfor %}
             </ul>
@@ -54,8 +69,6 @@
         {% endfor %}
     {% endfor %}
     
-    {# ! {{dump(dates)}} #}
-
     {% for day in dates %}
         {% set datesFormatted = datesFormatted|merge([date(day)]) %}
     {% endfor %}
@@ -80,31 +93,33 @@
         </thead>
         {% for user in users %}
         <tbody class="">
-            <tr class="border-y-2 bg-gray-50 hover:bg-gray-200">
-                <td class="w-1/3 font-bold text-slate-950 border-r-2">{{ user.username }}</td>
-                {% for day in lastSevenDay %}
-                    <td class="border-r-2 p-1">
-                        {% for roulement in user.roulements %}
-                            {% if roulement.date == day %}
-                                <div class="text-center text-lg">
-                                    {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
-                                        <p class="bg-gray-600 font-bold text-white">{{ roulement.MatinSoir }}</p>
-                                    {% else %}
-                                        <p class="bg-gray-600 font-bold text-white">{{ roulement.service.label }}</p>
-                                    {% endif %}
-                                    <p class="bg-gray-300">{{ roulement.priseDeService|date('H:i')}}</p>
-                                    <p class="bg-gray-300">{{ roulement.finDeService|date('H:i')}}</p>
-                                </div>
-                            {% endif %}
-                        {% endfor %}
-                    </td>  
-                {% endfor %}
-            </tr>
-            {% else %}
-                <tr>
-                    <td colspan="6">Aucun utilisateur correspondant</td>
+            {% if user.roulements|length > 0 %}
+                <tr class="border-y-2 bg-gray-50 hover:bg-gray-200">
+                    <td class="w-1/3 font-bold text-slate-950 border-r-2">{{ user.username }}</td>
+                    {% for day in lastSevenDay %}
+                        <td class="border-r-2 px-2 py-1">
+                            {% for roulement in user.roulements %}
+                                {% if roulement.date == day %}
+                                    <div class="text-center text-lg">
+                                        {% if roulement.service.label|slice(-1) != 'S' and roulement.service.label|slice(-1) != 'M'%}
+                                            <p class="bg-gray-600 font-bold text-white">{{ roulement.MatinSoir }}</p>
+                                        {% else %}
+                                            <p class="bg-gray-600 font-bold text-white">{{ roulement.service.label }}</p>
+                                        {% endif %}
+                                        <p class="bg-gray-300">{{ roulement.priseDeService|date('H:i')}}</p>
+                                        <p class="bg-gray-300">{{ roulement.finDeService|date('H:i')}}</p>
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        </td>  
+                    {% endfor %}
                 </tr>
-            {% endfor %}
+            {% endif %}
+        {% else %}
+            <tr>
+                <td colspan="6">Aucun utilisateur correspondant</td>
+            </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>

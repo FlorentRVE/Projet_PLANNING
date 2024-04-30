@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Repository\CategorieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -47,10 +48,10 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/massRegister', name: 'app_mass_register')]
-    public function massRegister(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    public function massRegister(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, CategorieRepository $cr): Response
     {
 
-        $spreadsheet = IOFactory::load('assets/excel/Liste_utilisateur.xlsx');
+        $spreadsheet = IOFactory::load('assets/excel/LISTE CDT 2024.xlsx');
         $sheet = $spreadsheet->getActiveSheet();
 
         $data = [];
@@ -64,27 +65,49 @@ class RegistrationController extends AbstractController
             $data[] = $rowData;
         }
 
-        $usersList = [];
-
         for($i = 1; $i < count($data); $i++) {
-            if(array_search($data[$i], $data) % 10 == 0) {
-                $usersList[] = $data[$i][0];
-            };
-        }
 
-        foreach($usersList as $userName) {
             $user = new User();
-            $user->setUsername($userName);
+            $user->setUsername($data[$i][0]);
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
-                    'test'
+                    $data[$i][1]
                 )
             );
+            $user->setMatricule($data[$i][1]);
+
+            if (isset($data[$i][2])) {
+                $categorie = $cr->findOneBy(['label' => $data[$i][2]]);
+                $user->setCategorie($categorie);
+            } else {
+                $user->setCategorie(null);
+            }
+
             $entityManager->persist($user);
             $entityManager->flush();
-        }
+        }        
 
         return new Response('Utilisateurs crées');
+    }
+
+    #[Route('/registerAdmin', name: 'app_register_admin')]
+    public function registerAdmin(UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
+    {
+        $user = new User();
+        $user->setUsername('admin');
+        $user->setPassword(
+            $userPasswordHasher->hashPassword(
+                $user,
+                'adminadmin'
+            )
+        );
+        $user->setMatricule('000000');
+        $user->setRoles(['ROLE_ADMIN']);
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return new Response('Admin crée');
     }
 }

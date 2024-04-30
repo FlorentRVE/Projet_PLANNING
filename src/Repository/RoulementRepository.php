@@ -39,9 +39,19 @@ class RoulementRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findOrCreate(string $matinSoir , User $agent, DateTime $date, Service $service, DateTime $priseService, DateTime $finService)
+    public function findByFerie($value): ?array
     {
-        $this->roulements = $this->loadAll($date);        
+        return $this->createQueryBuilder('r')
+            ->andWhere('r.date = :val')
+            ->setParameter('val', $value)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    public function findOrCreate(string $matinSoir, User $agent, DateTime $date, Service $service, DateTime $priseService, DateTime $finService)
+    {
+        $this->roulements = $this->loadAll($date);
 
         if (!array_key_exists($matinSoir, $this->roulements)) {
 
@@ -52,11 +62,11 @@ class RoulementRepository extends ServiceEntityRepository
             $roulement->setService($service);
             $roulement->setPriseDeService($priseService);
             $roulement->setFinDeService($finService);
-            
+
             $this->roulements[$matinSoir] = $roulement;
-            
-        } else {    
-            
+
+        } else {
+
             $this->roulements[$matinSoir]->setAgent($agent);
             $this->roulements[$matinSoir]->setDate($date);
             $this->roulements[$matinSoir]->setService($service);
