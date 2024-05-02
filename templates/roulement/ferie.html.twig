@@ -28,7 +28,7 @@
 
         {# =============== Jour férié ============== #}
         <div class="flex flex-col gap-2 bg-orange-200 p-4 rounded-xl w-2/6">
-            <p class="font-bold undeline text-orange-600 text-2xl text-center p-2">Jours fériés</p>
+            <p class="font-bold undeline text-orange-600 text-3xl text-center p-2">Jours fériés</p>
         </div>
 
         <form action="#" method="get" class="w-3/6">
@@ -48,7 +48,7 @@
             <tr class="text-center bg-gray-800 text-white">
                 <th></th>
                 {% for day in dates %}
-                    <th class="uppercase text-base">
+                    <th class="uppercase text-base text-orange-300">
                         <div>
                             <p>{{ dayTraduction[day|date('l')] }}</p>
                             <p>{{ day|date('d/m') }}</p>

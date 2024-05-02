@@ -22,6 +22,11 @@
                     {{ form_widget(form.categorie, {'attr': {'class': 'p-2 rounded-lg flex gap-2'}}) }}
                 </div>
 
+                <div class="mb-8 flex flex-col">
+                    {{ form_label(form.roles, 'Roles', {'label_attr': {'class': 'text-slate-100 uppercase font-semibold mb-2'}}) }}
+                    {{ form_widget(form.roles, {'attr': {'class': 'text-slate-100 flex gap-2'}}) }}
+                </div>
+
                 {{ form_errors(form, {'class': 'text-red-600 uppercase font-semibold mb-2'}) }}
 
                 

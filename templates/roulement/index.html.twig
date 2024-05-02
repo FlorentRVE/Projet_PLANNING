@@ -58,12 +58,28 @@
             <tr class="text-center bg-gray-800 text-white">
                 <th></th>
                 {% for day in slicedDay %}
-                    <th class="uppercase text-base">
-                        <div>
-                            <p>{{ dayTraduction[day|date('l')] }}</p>
-                            <p>{{ day|date('d/m') }}</p>
-                        </div>
-                    </th>
+                    {% set isFerie = false %}
+                    {% for ferieDay in ferie %}
+                        {% if day == ferieDay.date %}
+                            {% set isFerie = true %}
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if isFerie %}
+                        <th class="uppercase text-base text-orange-300">
+                            <div>
+                                <p>{{ dayTraduction[day|date('l')] }}</p>
+                                <p>{{ day|date('d/m') }}</p>
+                            </div>
+                        </th>
+                    {% else %}
+                        <th class="uppercase text-base">
+                            <div>
+                                <p>{{ dayTraduction[day|date('l')] }}</p>
+                                <p>{{ day|date('d/m') }}</p>
+                            </div>
+                        </th>
+                    {% endif %}
                 {% endfor %}
             </tr>
         </thead>
