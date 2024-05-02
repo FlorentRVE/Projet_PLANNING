@@ -15,13 +15,19 @@ class RoulementController extends AbstractController
     #[Route('/', name: 'app_home')]
     public function home()
     {
-        if (in_array('ROLE_ADMIN', $this->getUser()->getRoles()) || in_array('ROLE_PLANNING', $this->getUser()->getRoles())) {
+        if ($this->getUser()) {
+            if (in_array('ROLE_ADMIN', $this->getUser()->getRoles()) || in_array('ROLE_PLANNING', $this->getUser()->getRoles())) {
+
+                return $this->redirectToRoute('app_roulement_index', [], Response::HTTP_SEE_OTHER);
+
+            } else {
+
+                return $this->redirectToRoute('app_roulement_user', [], Response::HTTP_SEE_OTHER);
+            }
+        } else {
 
             return $this->redirectToRoute('app_roulement_index', [], Response::HTTP_SEE_OTHER);
 
-        } else {
-
-            return $this->redirectToRoute('app_roulement_user', [], Response::HTTP_SEE_OTHER);
         }
     }
 
@@ -29,26 +35,81 @@ class RoulementController extends AbstractController
     public function index(Request $request, UserRepository $userRepository, FerieRepository $ferieRepository, RoulementRepository $roulementRepository): Response
     {
         $searchTerm = $request->query->get('search');
+        $users = $userRepository->findUserBySearch($searchTerm);
 
-        $ferie = $ferieRepository->findAll();
-
-        foreach ($ferie as $day) {
-
-            if($roulementRepository->findByFerie($day->getDate())) {
-
-                $list_ferie = $roulementRepository->findByFerie($day->getDate());
-
+        $ferieDays = $ferieRepository->findAll();
+        foreach ($ferieDays as $day) {
+            if ($day->getDate()->format('m') == date('m') || $day->getDate()->format('m') == date('m') + 1) {
+                $listFerieThisMonthAndNextMonth[] = $day;
             }
         }
 
-        // dd($list_ferie);
+        // ============= Récupération et tri des dates =============
+        $datesList = array();
+        foreach ($users as $user) {
+            foreach ($user->getRoulements() as $roulement) {
+                if (!in_array($roulement->getDate()->format('d-m-Y'), $datesList)) {
+                    $datesList[] = $roulement->getDate()->format('d-m-Y');
+                }
+            }
+        }
 
-        $data = $userRepository->findUserBySearch($searchTerm);
+        $datesFormated = array();
+        foreach ($datesList as $dates) {
+            $datesFormated[] = new \DateTime($dates);
+        }
+
+        sort($datesFormated);
 
         return $this->render('roulement/index.html.twig', [
-            'users' => $data,
+            'users' => $users,
             'searchTerm' => $searchTerm,
-            'ferie' => $list_ferie,
+            'ferie' => $listFerieThisMonthAndNextMonth,
+            'dates' => $datesFormated
+        ]);
+    }
+
+    #[Route('/ferie', name: 'app_roulement_ferie', methods: ['GET'])]
+    public function ferie(Request $request, UserRepository $userRepository, FerieRepository $ferieRepository, RoulementRepository $roulementRepository): Response
+    {
+        $searchTerm = $request->query->get('search');
+        $users = $userRepository->findUserBySearch($searchTerm);
+        $ferieDays = $ferieRepository->findAll();
+
+        $listFerie = array();
+        foreach ($ferieDays as $day) {
+            $roulementFerie = $roulementRepository->findByFerie($day->getDate());
+            array_push($listFerie, ...$roulementFerie);
+        }
+
+        $listFerieThisMonthAndNextMonth = array();
+        foreach ($listFerie as $day) {
+            if ($day->getDate()->format('m') == date('m') || $day->getDate()->format('m') == date('m') + 1) {
+
+                $listFerieThisMonthAndNextMonth[] = $day;
+            }
+        }
+
+        // ============= Récupération et tri des dates =============
+        $datesList = array();
+        foreach ($listFerieThisMonthAndNextMonth as $roulementferie) {
+            if (!in_array($roulementferie->getDate()->format('d-m-Y'), $datesList)) {
+                $datesList[] = $roulementferie->getDate()->format('d-m-Y');
+            }
+        }
+
+        $datesFormated = array();
+        foreach ($datesList as $dates) {
+            $datesFormated[] = new \DateTime($dates);
+        }
+
+        sort($datesFormated);
+
+        return $this->render('roulement/ferie.html.twig', [
+            'users' => $users,
+            'searchTerm' => $searchTerm,
+            'ferie' => $listFerieThisMonthAndNextMonth,
+            'dates' => $datesFormated
         ]);
     }
 
@@ -56,7 +117,7 @@ class RoulementController extends AbstractController
     public function userDisplay(RoulementRepository $roulementRepository, Request $request): Response
     {
         // $user = 'SAMY-ARLAYE  RITCHIE JEAN';
-        $user = $this->getUser()->getUserIdentifier(); 
+        $user = $this->getUser()->getUserIdentifier();
 
         $roulement = $roulementRepository->findByUser($user);
 

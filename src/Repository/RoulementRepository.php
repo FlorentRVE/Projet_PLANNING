@@ -39,7 +39,7 @@ class RoulementRepository extends ServiceEntityRepository
         ;
     }
 
-    public function findByFerie($value): ?array
+    public function findByFerie($value): array
     {
         return $this->createQueryBuilder('r')
             ->andWhere('r.date = :val')
