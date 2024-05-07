@@ -26,18 +26,22 @@ class ImportService
     public function createRoulementFromImport()
     {
 
-        $arrayOfFilename = array();
+        $arrayOfFilenameAT = array();
+        $fileNameCRW = '';
 
         $filesInFolder = scandir(__DIR__ . '\..\..\public\assets\txt\\');
         foreach ($filesInFolder as $fileName) {
             if (str_contains($fileName, 'AT'))
-                array_push($arrayOfFilename, $fileName);
+                array_push($arrayOfFilenameAT, $fileName);
+
+            if (str_contains($fileName, 'CRW'))
+                $fileNameCRW = $fileName;
         }
 
-        foreach ($arrayOfFilename as $fileName) {
+        foreach ($arrayOfFilenameAT as $fileNameAT) {
 
             // ============ import fichier ABC =============
-            $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/' . $fileName, "\t");
+            $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/' . $fileNameAT, "\t");
             $importAT->import();
             $dataAT = $importAT->getData();
             $date = $importAT->getDate();
@@ -46,21 +50,15 @@ class ImportService
             
             if ($date == $dateToday || $date > $dateToday) {
 
-                // !dd($dataAT);
-
                 // ============= import fichier CRW =============
-                $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/16122023.CRW', ";");
+                $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/' . $fileNameCRW, ";");
                 $importCRW->import();
                 $dataCRW = $importCRW->getData();
-
-                // !dd($dataCRW);
 
                 // ================== FUSION AT et CRW ===============
 
                 $mergeATandCRW = new MergeATandCRW($dataAT, $dataCRW);
                 $dataForRoulement = $mergeATandCRW->merge();
-
-                // !dd($dataForRoulement);
 
                 // =========================== CREATION ROULEMENTS ========================
 
