@@ -16,16 +16,28 @@
                 <div class="mb-8 flex flex-col">
                     {{ form_label(registrationForm.username, 'Identifiant', {'label_attr': {'class': 'text-slate-100 uppercase font-semibold mb-2'}}) }}
                     {{ form_widget(registrationForm.username, {'attr': {'class': 'p-2 rounded-lg'}}) }}
+
+                    <div class="text-red-500 font-semibold mb-2">
+                        {{ form_errors(registrationForm.username) }}
+                    </div>
                 </div>
 
                 <div class="mb-8 flex flex-col">
                     {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'text-slate-100 uppercase font-semibold mb-2'}}) }}
                     {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'p-2 rounded-lg'}}) }}
+
+                    <div class="text-red-500 font-semibold mb-2">
+                        {{ form_errors(registrationForm.plainPassword) }}
+                    </div>
                 </div>
 
                 <div class="mb-8 flex flex-col">
                     {{ form_label(registrationForm.matricule, 'Matricule', {'label_attr': {'class': 'text-slate-100 uppercase font-semibold mb-2'}}) }}
                     {{ form_widget(registrationForm.matricule, {'attr': {'class': 'p-2 rounded-lg flex gap-2 p-2'}}) }}
+
+                    <div class="text-red-500 font-semibold mb-2">
+                        {{ form_errors(registrationForm.matricule) }}
+                    </div>
                 </div>
                 
                 <div class="mb-8 flex flex-col">
@@ -53,11 +65,5 @@
     <div class="flex justify-between w-4/5 mx-auto">
         <a href="{{ path('app_user_index') }}"  class="bg-sky-800 text-slate-50 rounded-2xl text-center px-5 py-3 hover:brightness-125 shadow-lg font-semibold">Retour à la liste</a>
     </div>
-
-        {% if error %}
-        <div class="text-center">
-            <p class="text-xl text-red-500">{{ error }}</p>
-        </div>
-    {% endif %}
     </div>
 {% endblock %}

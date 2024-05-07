@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use App\Helper\FormatNameHelper;
 use App\Repository\CategorieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -23,6 +24,10 @@ class RegistrationController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $formatedName = FormatNameHelper::formatName($user->getUsername());
+            $user->setUsername($formatedName);
+
             // encode the plain password
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
@@ -36,13 +41,10 @@ class RegistrationController extends AbstractController
             // do anything else you need here, like send an email
 
             return $this->redirectToRoute('app_roulement_index');
-        } else {            
-            $error = $form->getErrors(true); 
-        }
-
+        } 
+        
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
-            'error' => $error
 
         ]);
     }
@@ -68,7 +70,8 @@ class RegistrationController extends AbstractController
         for($i = 1; $i < count($data); $i++) {
 
             $user = new User();
-            $user->setUsername($data[$i][0]);
+            $formattedName = FormatNameHelper::formatName($data[$i][0]);
+            $user->setUsername($formattedName);
             $user->setPassword(
                 $userPasswordHasher->hashPassword(
                     $user,
@@ -95,7 +98,7 @@ class RegistrationController extends AbstractController
     public function registerAdmin(UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
-        $user->setUsername('admin');
+        $user->setUsername('ADMIN');
         $user->setPassword(
             $userPasswordHasher->hashPassword(
                 $user,
