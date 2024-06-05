@@ -78,7 +78,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             $user->setMatricule($matricule);
             $user->setUsername($nom);
             $user->setCategorie(null);
-            $user->setPassword('temp');
+            $user->setPassword($matricule);
             
             $this->getEntityManager()->persist($user);
             $this->getEntityManager()->flush();

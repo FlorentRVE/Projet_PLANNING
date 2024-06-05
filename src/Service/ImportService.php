@@ -25,33 +25,54 @@ class ImportService
 
     public function createRoulementFromImport()
     {
+        $urlCRW = '\\\\SOD-FILE01\partages\departements\dsp\tb_cadres\Tb_services\MOUVEMENT\SORTIE DEPÖT 2023 TELEPHERIQUE\TEST NOUVEAU FICHIER TELEPHERIQUE\bin\hastus/';
+        $urlAT = '\\\\SOD-FILE01\partages\departements\dsp\tb_cadres\Tb_services\MOUVEMENT\SORTIE DEPÖT 2023 TELEPHERIQUE\TEST NOUVEAU FICHIER TELEPHERIQUE\fichiers abc/';
 
         $arrayOfFilenameAT = array();
         $fileNameCRW = '';
 
-        $filesInFolder = scandir(__DIR__ . '\..\..\public\assets\txt\\');
-        foreach ($filesInFolder as $fileName) {
-            if (str_contains($fileName, 'AT'))
-                array_push($arrayOfFilenameAT, $fileName);
+        // $filesInFolder = scandir(__DIR__ . '\..\..\public\assets\txt\\');
+        // foreach ($filesInFolder as $fileName) {
+        //     if (str_contains($fileName, 'AT'))
+        //         array_push($arrayOfFilenameAT, $fileName);
 
-            if (str_contains($fileName, 'CRW'))
+        //     if (str_contains($fileName, 'CRW'))
+        //         $fileNameCRW = $fileName;
+        // }
+
+
+
+        $filesInFolderAT = scandir($urlAT);
+        foreach ($filesInFolderAT as $fileName) {
+            if (str_contains($fileName, 'AT')) {
+                array_push($arrayOfFilenameAT, $fileName);
+            }
+        }
+        rsort($arrayOfFilenameAT);
+
+        $filesInFolderCRW = scandir($urlCRW);
+        foreach ($filesInFolderCRW as $fileName) {
+            if (str_contains($fileName, 'CRW')) {
                 $fileNameCRW = $fileName;
+            }
         }
 
         foreach ($arrayOfFilenameAT as $fileNameAT) {
 
             // ============ import fichier ABC =============
-            $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/' . $fileNameAT, "\t");
+            // $importAT = new ImportAT(__DIR__ . '/../../public/assets/txt/' . $fileNameAT, "\t");
+            $importAT = new ImportAT($urlAT . $fileNameAT, "\t");
             $importAT->import();
             $dataAT = $importAT->getData();
-            $date = $importAT->getDate();
 
+            $date = $importAT->getDate();
             $dateToday = new \DateTime();
-            
-            if ($date == $dateToday || $date > $dateToday) {
+
+            if ($date->format('Y-m-d') == $dateToday->format('Y-m-d') || $date->format('Y-m-d') > $dateToday->format('Y-m-d')) {
 
                 // ============= import fichier CRW =============
-                $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/' . $fileNameCRW, ";");
+                // $importCRW = new ImportCRW(__DIR__ . '/../../public/assets/txt/' . $fileNameCRW, ";");
+                $importCRW = new ImportCRW($urlCRW . $fileNameCRW, ";");
                 $importCRW->import();
                 $dataCRW = $importCRW->getData();
 
