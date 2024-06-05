@@ -25,8 +25,8 @@ class ImportService
 
     public function createRoulementFromImport()
     {
-        $urlCRW = '\\\\SOD-FILE01\partages\departements\dsp\tb_cadres\Tb_services\MOUVEMENT\SORTIE DEPÖT 2023 TELEPHERIQUE\TEST NOUVEAU FICHIER TELEPHERIQUE\bin\hastus/';
-        $urlAT = '\\\\SOD-FILE01\partages\departements\dsp\tb_cadres\Tb_services\MOUVEMENT\SORTIE DEPÖT 2023 TELEPHERIQUE\TEST NOUVEAU FICHIER TELEPHERIQUE\fichiers abc/';
+        $urlCRW = $_ENV['urlCRW'];
+        $urlAT = $_ENV['urlAT'];
 
         $arrayOfFilenameAT = array();
         $fileNameCRW = '';
