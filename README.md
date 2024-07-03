@@ -28,7 +28,7 @@ Les objectifs du projet :
 
 ### Screenshot
 
-A venir ...
+<img src="/planning.png">
 
 
 ## Méthode
